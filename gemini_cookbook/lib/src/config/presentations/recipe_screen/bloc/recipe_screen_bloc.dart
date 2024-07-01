@@ -1,13 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-
-part 'recipe_screen_event.dart';
-part 'recipe_screen_state.dart';
+import 'package:gemini_cookbook/src/config/presentations/recipe_screen/bloc/recipe_screen_event.dart';
+import 'package:gemini_cookbook/src/config/presentations/recipe_screen/bloc/recipe_screen_state.dart';
 
 class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
-  RecipeScreenBloc() : super(RecipeScreenInitial()) {
-    on<RecipeScreenEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+  RecipeScreenBloc() : super(const RecipeScreenState()) {
+    on<TapChefNoodlesButtonEvent>(_onTapChefNoodlesButton);
   }
+  void _onTapChefNoodlesButton(TapChefNoodlesButtonEvent event,Emitter<RecipeScreenState> emit){}
 }

@@ -16,7 +16,7 @@ class ColorConstants {
   static const onErrorContainer1 = Color(0xff470001);
   static const background1 = Color(0xffFBF9F7);
   static const onBackground1 = Color(0xff1A1C1E);
-  static const surface1 = Color(0xffFBF9F7);
+  static const surface1 = Color(0xffffffff);
   static const onSurface1 = Color(0xff1A1C1E);
   static const surfaceVariant1 = Color(0xffE1E5EA);
   static const onSurfaceVariant1 = Color(0xff49454F);
@@ -30,22 +30,22 @@ class ColorConstants {
   static const surfaceTint1 = Color(0xff4FC3F7);
 
   // Dark Theme Mode
-  static const primary2 = Color(0xff0288D1);
-  static const onPrimary2 = Colors.white;
-  static const primaryContainer2 = Color(0xff005B9F);
+  static const primary2 = Color(0xff6a7075);
+  static const onPrimary2 = Color(0xffffffff);
+  static const primaryContainer2 = Color(0xff61a0ca);
   static const onPrimaryContainer2 = Color(0xffD0EFFF);
   static const secondary2 = Color(0xff82B1FF);
   static const onSecondary2 = Colors.black;
   static const secondaryContainer2 = Color(0xff669DF6);
-  static const onSecondaryContainer2 = Color(0xff002B5C);
+  static const onSecondaryContainer2 = Color(0xff0955a6);
   static const error2 = Color(0xffCF6679);
   static const onError2 = Colors.black;
   static const errorContainer2 = Color(0xffB3261E);
   static const onErrorContainer2 = Color(0xffFADAD7);
-  static const background2 = Color(0xff121212);
+  static const background2 = Color(0xff258fcc);
   static const onBackground2 = Color(0xffE0E0E0);
-  static const surface2 = Color(0xff1E1E1E);
-  static const onSurface2 = Color(0xffE0E0E0);
+  static const surface2 = Color(0xff8f9b9e);
+  static const onSurface2 = Color(0xff070707);
   static const surfaceVariant2 = Color(0xff37474F);
   static const onSurfaceVariant2 = Color(0xffCFCFCF);
   static const outline2 = Color(0xff919191);
@@ -56,4 +56,7 @@ class ColorConstants {
   static const onInverseSurface2 = Color(0xff2F3136);
   static const inversePrimary2 = Color(0xff4FC3F7);
   static const surfaceTint2 = Color(0xff0288D1);
+
+  // Some widget color
+  static const removeButtonColor = Color(0xFFBC0707);
 }

@@ -1,5 +1,9 @@
-part of 'recipe_screen_bloc.dart';
+import 'package:equatable/equatable.dart';
 
-sealed class RecipeScreenEvent extends Equatable {
+abstract class RecipeScreenEvent extends Equatable {
   const RecipeScreenEvent();
+  @override
+  List<Object?> get props => [];
 }
+
+class TapChefNoodlesButtonEvent extends RecipeScreenEvent{}

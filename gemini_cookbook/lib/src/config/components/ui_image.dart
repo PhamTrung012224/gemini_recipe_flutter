@@ -8,8 +8,8 @@ class UIImage extends StatelessWidget {
   final Color color;
   const UIImage(
       {super.key,
-      this.width = 24,
-      this.height = 24,
+      this.width = 42,
+      this.height = 42,
       required this.image,
       required this.color});
 

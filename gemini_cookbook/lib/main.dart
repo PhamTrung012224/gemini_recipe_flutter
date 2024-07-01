@@ -5,9 +5,11 @@ import 'package:gemini_cookbook/src/config/presentations/home_screen/home_screen
 import 'package:gemini_cookbook/src/config/themes/dark_theme.dart';
 import 'package:gemini_cookbook/src/config/themes/light_theme.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,6 +20,7 @@ class MyApp extends StatelessWidget {
         theme: LightTheme.themeData,
         darkTheme: DarkTheme.themeData,
         themeMode: ThemeMode.system,
+        // home: const RecipeScreen());
         home: BlocProvider(
             create: (_) => HomeScreenBloc(), child: const HomeScreen()));
   }
