@@ -30,6 +30,8 @@ After providing the recipe, explaining creatively why the recipe is good.
 List out any ingredients that are potential allergens.
 Provide a summary of how many people the recipe will serve and the nutritional information per serving.
 
+If the prompt and additional information does not provide any information about food and instead contains unrelated information, please provide answers based on RANDOM Vietnamese Recipe.
+
 Note: ${PromptObject.formatting}''';
 
   static const formatting = """Return the recipe in JSON using the following structure:

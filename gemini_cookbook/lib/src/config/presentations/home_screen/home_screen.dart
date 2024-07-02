@@ -14,8 +14,8 @@ import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_s
 import 'package:gemini_cookbook/src/config/presentations/recipe_screen/recipe_screen.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mime/mime.dart';
-
 
 import '../../themes/color_source.dart';
 import 'bloc/home_screen_bloc.dart';
@@ -67,14 +67,15 @@ class _HomeScreenState extends State<HomeScreen> {
   late final ImageObject imgData = ImageObject(image: [], imageData: []);
   late final TextEditingController textEditingController;
   late final FocusNode textFieldFocus;
+  bool _isLoading = false;
   @override
   void initState() {
     _model = GenerativeModel(
       safetySettings: [
-        SafetySetting(HarmCategory.dangerousContent, HarmBlockThreshold.low),
-        SafetySetting(HarmCategory.harassment, HarmBlockThreshold.low),
-        SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.low),
-        SafetySetting(HarmCategory.sexuallyExplicit, HarmBlockThreshold.low)
+        SafetySetting(HarmCategory.dangerousContent, HarmBlockThreshold.high),
+        SafetySetting(HarmCategory.harassment, HarmBlockThreshold.high),
+        SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.high),
+        SafetySetting(HarmCategory.sexuallyExplicit, HarmBlockThreshold.high)
       ],
       model: 'gemini-1.5-flash',
       apiKey: _apiKey,
@@ -149,7 +150,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       SizedBox(
                         child: Padding(
-                          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.013, left: 8,bottom:MediaQuery.of(context).size.height * 0.013),
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.013,
+                              left: 8,
+                              bottom:
+                                  MediaQuery.of(context).size.height * 0.013),
                           child: Text(
                             'Create a recipe',
                             style: TextStyleConstants.headline1,
@@ -628,14 +633,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                           textEditingController.value.text,
                                           imgData.imageData,
                                         );
-                                        final response=PromptResponse.fromJson(json.decode(res.text.toString()));
+                                        final response =
+                                            PromptResponse.fromJson(json
+                                                .decode(res.text.toString()));
                                         imgData.resetData();
                                         textEditingController.clear();
                                         // ignore: use_build_context_synchronously
                                         context
                                             .read<HomeScreenBloc>()
                                             .add(TapResetPromptEvent());
-                                        setState(() {});
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
                                         // ignore: use_build_context_synchronously
                                         Navigator.of(context)
                                             .push(MaterialPageRoute(
@@ -643,7 +652,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             promptResponse: response,
                                           ),
                                         ));
-
                                       },
                                       child: Container(
                                         width:
@@ -664,17 +672,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                             borderRadius:
                                                 const BorderRadius.all(
                                                     Radius.circular(12))),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.send_sharp),
-                                            const SizedBox(width: 8),
-                                            Text('Submit Prompt',
-                                                style:
-                                                    TextStyleConstants.medium),
-                                          ],
-                                        ),
+                                        child: _isLoading == true
+                                            ? Center(
+                                                child: LoadingAnimationWidget
+                                                    .staggeredDotsWave(
+                                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                                  size: 42,
+                                                ),
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(Icons.send_sharp),
+                                                  const SizedBox(width: 8),
+                                                  Text('Submit Prompt',
+                                                      style: TextStyleConstants
+                                                          .medium),
+                                                ],
+                                              ),
                                       ),
                                     );
                                   },
@@ -740,6 +756,9 @@ class _HomeScreenState extends State<HomeScreen> {
       PromptObject prompt,
       String additionalInformation,
       List<DataPart>? images) async {
+    setState(() {
+      _isLoading = true;
+    });
     return await GeminiService.generateContent(
         model, prompt, additionalInformation, images);
   }

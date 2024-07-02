@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gemini_cookbook/src/config/components/ui_space.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
@@ -47,13 +48,18 @@ class _RecipeScreenState extends State<RecipeScreen> {
                             child: const Icon(size: 28, Icons.chevron_left)),
                       ),
                       Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            widget.promptResponse.title,
-                            style: TextStyleConstants
-                                .title, // Add this line to handle overflow with ellipsis
+                        child: Center(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width-48-12-32 - MediaQuery.of(context).size.width * 0.16,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                widget.promptResponse.title,
+                                style: TextStyleConstants
+                                    .title, // Add this line to handle overflow with ellipsis
+                              ),
+                            ),
                           ),
                         ),
                       ),
