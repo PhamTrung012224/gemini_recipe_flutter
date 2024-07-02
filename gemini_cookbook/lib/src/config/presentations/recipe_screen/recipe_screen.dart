@@ -16,189 +16,228 @@ class _RecipeScreenState extends State<RecipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.only(
-                    top: 12, bottom: 24, left: 6, right: 6),
-                decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(32),
-                        bottomRight: Radius.circular(32)),
-                    color: Theme.of(context).colorScheme.primary),
-                width: MediaQuery.of(context).size.width,
-                alignment: Alignment.centerLeft,
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      GestureDetector(
-                        onTap: () => {
-                          if (Navigator.canPop(context))
-                            {Navigator.pop(context)}
-                        },
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(12))),
-                            width: 48,
-                            child: const Icon(size: 28, Icons.chevron_left)),
-                      ),
-                      Flexible(
-                        child: Center(
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width-48-12-32 - MediaQuery.of(context).size.width * 0.16,
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                textAlign: TextAlign.center,
-                                widget.promptResponse.title,
-                                style: TextStyleConstants
-                                    .title, // Add this line to handle overflow with ellipsis
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => showDialog<String>(
-                            builder: (context) => Dialog(
-                                  child: SingleChildScrollView(
-                                      child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 12,
-                                        top: 16,
-                                        bottom: 16,
-                                        right: 12),
-                                    child: Text(
-                                      widget.promptResponse.description,
-                                      style: TextStyleConstants.semiMedium,
-                                    ),
-                                  )),
-                                ),
-                            context: context),
-                        child: Container(
-                            alignment: Alignment.center,
-                            width:
-                                32 + MediaQuery.of(context).size.width * 0.16,
-                            padding: const EdgeInsets.only(left: 16, right: 16),
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(12))),
-                            child: Text(
-                              'Facts',
-                              style: TextStyleConstants.headline2,
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
+      body: Stack(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/recipeScreen.jpg"),
+                fit: BoxFit.cover,
               ),
             ),
-            SliverToBoxAdapter(
-                child: Container(
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 32,
-                    child: Row(
-                      children: [
-                        Text('Allergens', style: TextStyleConstants.headline2),
-                        const SizedBox(width: 12),
-                        Flexible(
-                          child: Text(
-                            widget.promptResponse.allergens,
+          ),
+          SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  toolbarHeight: 84,
+                  actions: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                          top: 12, bottom: 24, left: 6, right: 6),
+                      decoration:
+                          const BoxDecoration(color: Colors.transparent),
+                      width: MediaQuery.of(context).size.width,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(12))),
+                                width: 48,
+                                height: 48,
+                                child:
+                                    const Icon(Icons.chevron_left, size: 28)),
                           ),
-                        )
-                      ],
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width -
+                                48 -
+                                12 -
+                                32 -
+                                MediaQuery.of(context).size.width * 0.16,
+                          ),
+                          GestureDetector(
+                            onTap: () => showDialog<String>(
+                                context: context,
+                                builder: (context) => Dialog(
+                                      child: SingleChildScrollView(
+                                          child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 12,
+                                            top: 16,
+                                            bottom: 16,
+                                            right: 12),
+                                        child: Text(
+                                          widget.promptResponse.description,
+                                          style: TextStyleConstants.semiMedium,
+                                        ),
+                                      )),
+                                    )),
+                            child: Container(
+                                alignment: Alignment.center,
+                                width: 32 +
+                                    MediaQuery.of(context).size.width * 0.16,
+                                height: 48,
+                                padding:
+                                    const EdgeInsets.only(left: 16, right: 16),
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(12))),
+                                child: Text(
+                                  'Facts',
+                                  style: TextStyleConstants.headline2,
+                                )),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const UISpace(height: 16),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 32,
-                    child: Row(
-                      children: [
-                        Text('Servings', style: TextStyleConstants.headline2),
-                        const SizedBox(width: 12),
-                        Text(widget.promptResponse.servings)
-                      ],
-                    ),
-                  ),
-                  const UISpace(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  ],
+                  expandedHeight: MediaQuery.of(context).size.height * 0.3,
+                  backgroundColor: Colors.transparent,
+                ),
+                SliverToBoxAdapter(
+                    child: Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(40),
+                          topLeft: Radius.circular(40))),
+                  width: MediaQuery.of(context).size.width,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: Column(
                     children: [
-                      Text('Nutrition per serving',
-                          style: TextStyleConstants.headline2),
-                      const UISpace(height: 8),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 32,
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 18, right: 20, left: 20, bottom: 18),
+                                child: Text(
+                                  widget.promptResponse.title,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyleConstants
+                                      .title, // Handle text overflow with ellipsis
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 32,
+                        child: Row(
+                          children: [
+                            Text('Allergens',
+                                style: TextStyleConstants.headline2),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(
+                                widget.promptResponse.allergens,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      const UISpace(height: 16),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 32,
+                        child: Row(
+                          children: [
+                            Text('Servings',
+                                style: TextStyleConstants.headline2),
+                            const SizedBox(width: 12),
+                            Text(widget.promptResponse.servings)
+                          ],
+                        ),
+                      ),
+                      const UISpace(height: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                              '- Calories: ${widget.promptResponse.nutritionInformation.calories}'),
-                          Text(
-                              '- Carbohydrates: ${widget.promptResponse.nutritionInformation.carbohydrates}'),
-                          Text(
-                              '- Cholesterol: ${widget.promptResponse.nutritionInformation.cholesterol}'),
-                          Text(
-                              '- Fat: ${widget.promptResponse.nutritionInformation.fat}'),
-                          Text(
-                              '- Fiber: ${widget.promptResponse.nutritionInformation.fiber}'),
-                          Text(
-                              '- Protein: ${widget.promptResponse.nutritionInformation.protein}'),
-                          Text(
-                              '- Saturated Fat: ${widget.promptResponse.nutritionInformation.saturatedFat}'),
-                          Text(
-                              '- Sodium: ${widget.promptResponse.nutritionInformation.sodium}'),
-                          Text(
-                              '- Sugar: ${widget.promptResponse.nutritionInformation.sugar}'),
+                          Text('Nutrition per serving',
+                              style: TextStyleConstants.headline2),
+                          const UISpace(height: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '- Calories: ${widget.promptResponse.nutritionInformation.calories}'),
+                              Text(
+                                  '- Carbohydrates: ${widget.promptResponse.nutritionInformation.carbohydrates}'),
+                              Text(
+                                  '- Cholesterol: ${widget.promptResponse.nutritionInformation.cholesterol}'),
+                              Text(
+                                  '- Fat: ${widget.promptResponse.nutritionInformation.fat}'),
+                              Text(
+                                  '- Fiber: ${widget.promptResponse.nutritionInformation.fiber}'),
+                              Text(
+                                  '- Protein: ${widget.promptResponse.nutritionInformation.protein}'),
+                              Text(
+                                  '- Saturated Fat: ${widget.promptResponse.nutritionInformation.saturatedFat}'),
+                              Text(
+                                  '- Sodium: ${widget.promptResponse.nutritionInformation.sodium}'),
+                              Text(
+                                  '- Sugar: ${widget.promptResponse.nutritionInformation.sugar}'),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                  const UISpace(height: 24),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Ingredients', style: TextStyleConstants.headline2),
-                      const UISpace(height: 8),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, idx) =>
-                            Text('- ${widget.promptResponse.ingredients[idx]}'),
-                        itemCount: widget.promptResponse.ingredients.length,
-                      )
-                    ],
-                  ),
-                  const UISpace(height: 24),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Instructions', style: TextStyleConstants.headline2),
-                      const UISpace(height: 8),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, idx) => Text(
-                            '${idx + 1}. ${widget.promptResponse.instructions[idx]}'),
-                        itemCount: widget.promptResponse.instructions.length,
                       ),
-                      const UISpace(height: 48),
+                      const UISpace(height: 24),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Ingredients',
+                              style: TextStyleConstants.headline2),
+                          const UISpace(height: 8),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, idx) => Text(
+                                '- ${widget.promptResponse.ingredients[idx]}'),
+                            itemCount: widget.promptResponse.ingredients.length,
+                          )
+                        ],
+                      ),
+                      const UISpace(height: 24),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Instructions',
+                              style: TextStyleConstants.headline2),
+                          const UISpace(height: 8),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, idx) => Text(
+                                '${idx + 1}. ${widget.promptResponse.instructions[idx]}'),
+                            itemCount:
+                                widget.promptResponse.instructions.length,
+                          ),
+                          const UISpace(height: 48),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ))
-          ],
-        ),
+                ))
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/home_screen.dart';
+import 'package:gemini_cookbook/src/config/presentations/onboarding_screen/onboarding_screen.dart';
 import 'package:gemini_cookbook/src/config/themes/dark_theme.dart';
 import 'package:gemini_cookbook/src/config/themes/light_theme.dart';
 
@@ -21,7 +19,8 @@ class MyApp extends StatelessWidget {
         darkTheme: DarkTheme.themeData,
         themeMode: ThemeMode.system,
         // home: const RecipeScreen());
-        home: BlocProvider(
-            create: (_) => HomeScreenBloc(), child: const HomeScreen()));
+        home: const OnBoardingScreen());
+        // home: BlocProvider(
+        //     create: (_) => HomeScreenBloc(), child: const HomeScreen()));
   }
 }

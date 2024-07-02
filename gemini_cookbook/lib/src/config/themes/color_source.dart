@@ -58,5 +58,7 @@ class ColorConstants {
   static const surfaceTint2 = Color(0xff0288D1);
 
   // Some widget color
+  static const gradientBlue = Color(0xFF1971F4);
+  static const gradientOrange = Color(0xFFFD9459);
   static const removeButtonColor = Color(0xFFBC0707);
 }
