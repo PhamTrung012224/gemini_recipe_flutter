@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "812782569235",
+    "project_id": "recipe-with-gemini",
+    "storage_bucket": "recipe-with-gemini.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812782569235:android:e1deac914b8092bb78bce6",
+        "android_client_info": {
+          "package_name": "com.example.gemini_cookbook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6f5p6KPVxBVdcVQI--meCUnYgbdpQImM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
