@@ -2,21 +2,25 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:choice/choice.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gemini_cookbook/src/config/components/ui_icon.dart';
 import 'package:gemini_cookbook/src/config/components/ui_space.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/models/objects/image_object.dart';
 import 'package:gemini_cookbook/src/config/models/objects/prompt_object.dart';
 import 'package:gemini_cookbook/src/config/models/objects/prompt_response_object.dart';
 import 'package:gemini_cookbook/src/config/models/services/gemini.dart';
+import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
+import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_event.dart';
+import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_state.dart';
 import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_event.dart';
 import 'package:gemini_cookbook/src/config/presentations/recipe_screen/recipe_screen.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mime/mime.dart';
+import 'package:safe_text/safe_text.dart';
 
 import '../../themes/color_source.dart';
 import 'bloc/home_screen_bloc.dart';
@@ -50,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Chinese',
     'Indian',
     'Greek',
-    'Moroccan',
+    'Vietnamese',
     'Ethiopian',
     'South African',
   ];
@@ -69,6 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late final TextEditingController textEditingController;
   late final FocusNode textFieldFocus;
   bool _isLoading = false;
+  bool isDarkMode = false;
+
   @override
   void initState() {
     _model = GenerativeModel(
@@ -84,6 +90,12 @@ class _HomeScreenState extends State<HomeScreen> {
     textEditingController = TextEditingController();
     textFieldFocus = FocusNode();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    isDarkMode = (Theme.of(context).brightness == Brightness.dark);
+    super.didChangeDependencies();
   }
 
   @override
@@ -106,29 +118,55 @@ class _HomeScreenState extends State<HomeScreen> {
                     background: Stack(
                       children: [
                         Container(
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              ColorConstants.gradientOrange,
-                              Theme.of(context).colorScheme.primary,
-                            ]),
-                          ),
-                        ),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: isDarkMode
+                                ? const BoxDecoration(
+                                    gradient: LinearGradient(colors: [
+                                      Color(0xFF3d5a80),
+                                      Color(0xff82a8bd),
+                                    ]),
+                                  )
+                                : const BoxDecoration(
+                                    gradient: LinearGradient(colors: [
+                                      Color(0xff8ecae6),
+                                      Color(0xff2886a8),
+                                    ]),
+                                  )),
                         Column(children: [
                           UISpace(
                               height:
                                   MediaQuery.of(context).size.height * 0.015),
                           Row(
                             children: [
-                              const Icon(Icons.account_circle_outlined),
+                              UIIcon(
+                                  size: 28,
+                                  icon: IconConstants.accountIcon,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
                               Expanded(
                                 child: Center(
                                   child: Text(
-                                    "Meowdy! Let's get cooking!",
+                                    "Let's cook together and amaze!",
                                     style: TextStyleConstants.headline1,
                                   ),
                                 ),
                               ),
+                              BlocBuilder<SignInBloc, SignInState>(
+                                builder: (context, state) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        context
+                                            .read<SignInBloc>()
+                                            .add(SignOutRequired());
+                                      },
+                                      child: UIIcon(
+                                          size: 28,
+                                          icon: IconConstants.logoutIcon,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface));
+                                },
+                              )
                             ],
                           ),
                           UISpace(
@@ -592,7 +630,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 bottom: 16,
                                                                 right: 12),
                                                         child: Text(
-                                                          '${state.prompt.prompt} \n\nLast but not least, also include the followings additional information: ${textEditingController.value.text}',
+                                                          "${state.prompt.prompt} \n\nOptionally include if these following additional information if these information related to recipe and: ${textEditingController.value.text}",
                                                           style:
                                                               TextStyleConstants
                                                                   .normal,
@@ -645,34 +683,101 @@ class _HomeScreenState extends State<HomeScreen> {
                                       builder: (context, state) {
                                         return GestureDetector(
                                           onTap: () async {
-                                            final res = await _submitPrompt(
-                                              _model,
-                                              state.prompt,
-                                              textEditingController.value.text,
-                                              imgData.imageData,
-                                            );
-                                            final response =
-                                                PromptResponse.fromJson(
-                                                    json.decode(
-                                                        res.text.toString()));
-                                            imgData.resetData();
-                                            textEditingController.clear();
-                                            // ignore: use_build_context_synchronously
-                                            context
-                                                .read<HomeScreenBloc>()
-                                                .add(TapResetPromptEvent());
-                                            setState(() {
-                                              _isLoading = false;
-                                            });
-                                            // ignore: use_build_context_synchronously
-                                            Navigator.of(context)
-                                                .push(
-                                                    MaterialPageRoute(
-                                              builder: (context) =>
-                                                  RecipeScreen(
-                                                promptResponse: response,
-                                              ),
-                                            ));
+                                            try {
+                                              String filteredText;
+                                              try {
+                                                filteredText =
+                                                    SafeText.filterText(
+                                                  text: textEditingController
+                                                      .value.text,
+                                                  extraWords:
+                                                      Constants.extraBadWords,
+                                                  useDefaultWords: true,
+                                                  fullMode: true,
+                                                  obscureSymbol: "",
+                                                );
+                                              } on FormatException {
+                                                // Handle specific exception for text formatting
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    backgroundColor:
+                                                        Colors.blueGrey,
+                                                    content: Text(
+                                                      'Format Error: Please avoid using Special Characters !, #, [, +, ...',
+                                                      style: TextStyleConstants
+                                                          .semiNormal,
+                                                    ),
+                                                  ),
+                                                );
+                                                textEditingController.clear();
+                                                return; // Stop further execution in case of this error
+                                              }
+
+                                              final res = await _submitPrompt(
+                                                _model,
+                                                state.prompt,
+                                                filteredText,
+                                                imgData.imageData,
+                                              );
+                                              final Map<String, dynamic>
+                                                  jsonMap = json.decode(
+                                                      res.text.toString());
+                                              final PromptResponse response =
+                                                  PromptResponse.fromJson(
+                                                      jsonMap);
+                                              imgData.resetData();
+                                              textEditingController.clear();
+                                              context
+                                                  .read<HomeScreenBloc>()
+                                                  .add(TapResetPromptEvent());
+                                              setState(() {
+                                                _isLoading = false;
+                                              });
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      RecipeScreen(
+                                                    promptResponse: response,
+                                                  ),
+                                                ),
+                                              );
+                                            } on HttpException {
+                                              // Handle network-related exceptions
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  backgroundColor:
+                                                      Colors.blueGrey,
+                                                  content: Text(
+                                                    'Network Error: Unable to submit your request.',
+                                                    style: TextStyleConstants
+                                                        .semiNormal,
+                                                  ),
+                                                ),
+                                              );
+                                              setState(() {
+                                                _isLoading = false;
+                                              });
+                                            } catch (e) {
+                                              // Handle any other exceptions that weren't caught by the specific catches
+                                              print(e);
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  backgroundColor:
+                                                      Colors.blueGrey,
+                                                  content: Text(
+                                                    'An unexpected error occurred. Please try again.',
+                                                    style: TextStyleConstants
+                                                        .semiNormal,
+                                                  ),
+                                                ),
+                                              );
+                                              setState(() {
+                                                _isLoading = false;
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             width: MediaQuery.of(context)
@@ -790,6 +895,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _isLoading = true;
     });
+    textFieldFocus.unfocus();
     return await GeminiService.generateContent(
         model, prompt, additionalInformation, images);
   }

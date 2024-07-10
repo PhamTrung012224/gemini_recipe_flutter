@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:gemini_cookbook/src/config/components/ui_icon.dart';
 import 'package:gemini_cookbook/src/config/components/ui_space.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/models/objects/prompt_response_object.dart';
+
+import '../../components/gradient_text.dart';
 
 class RecipeScreen extends StatefulWidget {
   final PromptResponse promptResponse;
@@ -13,6 +17,32 @@ class RecipeScreen extends StatefulWidget {
 }
 
 class _RecipeScreenState extends State<RecipeScreen> {
+  late final String allergens;
+  late final String servings;
+  late final NutritionInformation nutritionInformation;
+  late final List<String> ingredients;
+  late final List<Instructions> instructions;
+  late List<bool> isOnSwitch;
+  bool isDarkMode = false;
+
+  @override
+  void initState() {
+    allergens = widget.promptResponse.allergens;
+    servings = widget.promptResponse.servings;
+    nutritionInformation = widget.promptResponse.nutritionInformation;
+    ingredients = widget.promptResponse.ingredients;
+    instructions = widget.promptResponse.instructions;
+
+    isOnSwitch = List.filled(instructions.length, false);
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    isDarkMode = (Theme.of(context).brightness == Brightness.dark);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,9 +50,11 @@ class _RecipeScreenState extends State<RecipeScreen> {
         children: [
           Container(
             width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/recipeScreen.jpg"),
+                image: isDarkMode
+                    ? const AssetImage(ImageConstants.recipeDarkBackground)
+                    : const AssetImage(ImageConstants.recipeBackground),
                 fit: BoxFit.cover,
               ),
             ),
@@ -122,6 +154,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width - 32,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Flexible(
                               child: Padding(
@@ -138,99 +171,415 @@ class _RecipeScreenState extends State<RecipeScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(
+                      Container(
+                          width: MediaQuery.of(context).size.width - 32,
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.background,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(16))),
+                          child: Row(
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                width:
+                                    (MediaQuery.of(context).size.width - 32) /
+                                        3,
+                                height:
+                                    (MediaQuery.of(context).size.width - 32) /
+                                        3,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 4.0),
+                                      child: UIIcon(
+                                          size: 48,
+                                          icon: IconConstants.clockIcon,
+                                          color: Colors.green.shade400),
+                                    ),
+                                    Text(
+                                      widget.promptResponse.totalRecipeTime,
+                                      style:
+                                          TextStyleConstants.recipeContentBold,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                width:
+                                    (MediaQuery.of(context).size.width - 32) /
+                                        3,
+                                height:
+                                    (MediaQuery.of(context).size.width - 32) /
+                                        3,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(bottom: 4.0),
+                                      child: UIIcon(
+                                          size: 48,
+                                          icon: IconConstants.caloriesIcon,
+                                          color: Colors.red),
+                                    ),
+                                    Text(
+                                      widget.promptResponse.calories,
+                                      style:
+                                          TextStyleConstants.recipeContentBold,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                width:
+                                    (MediaQuery.of(context).size.width - 32) /
+                                        3,
+                                height:
+                                    (MediaQuery.of(context).size.width - 32) /
+                                        3,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 4.0),
+                                      child: UIIcon(
+                                          size: 48,
+                                          icon: IconConstants.chefHatIcon,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary),
+                                    ),
+                                    Text(
+                                      widget.promptResponse.level,
+                                      style:
+                                          TextStyleConstants.recipeContentBold,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          )),
+                      const UISpace(height: 16),
+                      Container(
                         width: MediaQuery.of(context).size.width - 32,
-                        child: Row(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16))),
+                        child: Column(
                           children: [
-                            Text('Allergens',
-                                style: TextStyleConstants.headline2),
-                            const SizedBox(width: 12),
-                            Flexible(
-                              child: Text(
-                                widget.promptResponse.allergens,
+                            Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: UIIcon(
+                                      size: 26,
+                                      icon: IconConstants.allergensIcon,
+                                      color: Colors.red),
+                                ),
+                                GradientText(
+                                  'Allergens',
+                                  style: TextStyleConstants.title,
+                                  gradient: LinearGradient(colors: [
+                                    Colors.red.shade300,
+                                    Colors.red.shade300
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface))),
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      allergens,
+                                      style: TextStyleConstants.recipeContent,
+                                    ),
+                                  ),
+                                ],
                               ),
                             )
                           ],
                         ),
                       ),
                       const UISpace(height: 16),
-                      SizedBox(
+                      Container(
                         width: MediaQuery.of(context).size.width - 32,
-                        child: Row(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16))),
+                        child: Column(
                           children: [
-                            Text('Servings',
-                                style: TextStyleConstants.headline2),
-                            const SizedBox(width: 12),
-                            Text(widget.promptResponse.servings)
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: UIIcon(
+                                      size: 26,
+                                      icon: IconConstants.servingsIcon,
+                                      color: Colors.brown.shade700),
+                                ),
+                                GradientText(
+                                  'Servings',
+                                  style: TextStyleConstants.title,
+                                  gradient: LinearGradient(colors: [
+                                    Colors.brown.shade300,
+                                    Colors.brown.shade300
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface))),
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      servings,
+                                      style: TextStyleConstants.recipeContent,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ),
                       const UISpace(height: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Nutrition per serving',
-                              style: TextStyleConstants.headline2),
-                          const UISpace(height: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  '- Calories: ${widget.promptResponse.nutritionInformation.calories}'),
-                              Text(
-                                  '- Carbohydrates: ${widget.promptResponse.nutritionInformation.carbohydrates}'),
-                              Text(
-                                  '- Cholesterol: ${widget.promptResponse.nutritionInformation.cholesterol}'),
-                              Text(
-                                  '- Fat: ${widget.promptResponse.nutritionInformation.fat}'),
-                              Text(
-                                  '- Fiber: ${widget.promptResponse.nutritionInformation.fiber}'),
-                              Text(
-                                  '- Protein: ${widget.promptResponse.nutritionInformation.protein}'),
-                              Text(
-                                  '- Saturated Fat: ${widget.promptResponse.nutritionInformation.saturatedFat}'),
-                              Text(
-                                  '- Sodium: ${widget.promptResponse.nutritionInformation.sodium}'),
-                              Text(
-                                  '- Sugar: ${widget.promptResponse.nutritionInformation.sugar}'),
-                            ],
-                          )
-                        ],
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16))),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: UIIcon(
+                                      size: 26,
+                                      icon: IconConstants.nutritionIcon,
+                                      color: Colors.yellow.shade600),
+                                ),
+                                GradientText(
+                                  'Nutrition per serving',
+                                  style: TextStyleConstants.title,
+                                  gradient: LinearGradient(colors: [
+                                    Colors.yellow.shade600,
+                                    Colors.yellow.shade600
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            Container(
+                                padding: const EdgeInsets.all(8),
+                                alignment: Alignment.centerLeft,
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        top: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface))),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        '- Carbohydrates: ${nutritionInformation.carbohydrates}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text(
+                                        '- Cholesterol: ${nutritionInformation.cholesterol}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text('- Fat: ${nutritionInformation.fat}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text(
+                                        '- Fiber: ${nutritionInformation.fiber}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text(
+                                        '- Protein: ${nutritionInformation.protein}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text(
+                                        '- Saturated Fat: ${nutritionInformation.saturatedFat}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text(
+                                        '- Sodium: ${nutritionInformation.sodium}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                    Text(
+                                        '- Sugar: ${nutritionInformation.sugar}',
+                                        style:
+                                            TextStyleConstants.recipeContent),
+                                  ],
+                                ))
+                          ],
+                        ),
                       ),
                       const UISpace(height: 24),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Ingredients',
-                              style: TextStyleConstants.headline2),
-                          const UISpace(height: 8),
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, idx) => Text(
-                                '- ${widget.promptResponse.ingredients[idx]}'),
-                            itemCount: widget.promptResponse.ingredients.length,
-                          )
-                        ],
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16))),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: UIIcon(
+                                      size: 26,
+                                      icon: IconConstants.ingredientsIcon,
+                                      color: Colors.green.shade500),
+                                ),
+                                GradientText(
+                                  'Ingredients',
+                                  style: TextStyleConstants.title,
+                                  gradient: LinearGradient(colors: [
+                                    Colors.green.shade300,
+                                    Colors.green.shade300
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            Container(
+                                padding: const EdgeInsets.all(8),
+                                alignment: Alignment.centerLeft,
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        top: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface))),
+                                child: ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, idx) => Text(
+                                    '- ${ingredients[idx]}',
+                                    style: TextStyleConstants.recipeContent,
+                                  ),
+                                  itemCount: ingredients.length,
+                                ))
+                          ],
+                        ),
                       ),
                       const UISpace(height: 24),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Instructions',
-                              style: TextStyleConstants.headline2),
-                          const UISpace(height: 8),
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, idx) => Text(
-                                '${idx + 1}. ${widget.promptResponse.instructions[idx]}'),
-                            itemCount:
-                                widget.promptResponse.instructions.length,
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16))),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: UIIcon(
+                                  size: 26,
+                                  icon: IconConstants.instructionsIcon,
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                            GradientText(
+                              'Instructions',
+                              style: TextStyleConstants.title,
+                              gradient: LinearGradient(colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.primary
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const UISpace(height: 4),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        padding: const EdgeInsets.only(
+                            top: 12, bottom: 16, left: 16, right: 16),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(12),bottomRight: Radius.circular(12)),
+                          color: Theme.of(context).colorScheme.background,
+                        ),
+                        child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, idx) => Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8)),
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: GradientText(
+                                        'Step ${idx + 1}: ${instructions[idx].stepTitle}',
+                                        style: TextStyleConstants.headline1,
+                                        gradient: LinearGradient(colors: [
+                                          Theme.of(context).colorScheme.primary,
+                                          Theme.of(context).colorScheme.onSurface
+                                        ]),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          isOnSwitch[idx] = !isOnSwitch[idx];
+                                        });
+                                      },
+                                      child: const Icon(
+                                        Icons.expand_circle_down_outlined,
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                isOnSwitch[idx]
+                                    ? Text(
+                                        instructions[idx].detailInstructions,
+                                        style: TextStyleConstants.recipeContent,
+                                      )
+                                    : const SizedBox
+                                        .shrink(), // Changed from GestureDetector() to SizedBox.shrink()
+                              ],
+                            ),
                           ),
-                          const UISpace(height: 48),
-                        ],
+                          itemCount: instructions.length,
+                        ),
                       ),
+                      const UISpace(height: 48),
                     ],
                   ),
                 ))

@@ -7,7 +7,7 @@ class DarkTheme {
     return ThemeData(
         useMaterial3: true,
         colorScheme: const ColorScheme(
-          brightness: Brightness.light,
+          brightness: Brightness.dark,
           primary: ColorConstants.primary2,
           onPrimary: ColorConstants.onPrimary2,
           primaryContainer: ColorConstants.primaryContainer2,

@@ -13,34 +13,50 @@ PromptResponse _$PromptResponseFromJson(Map<String, dynamic> json) =>
           .map((e) => e as String)
           .toList(),
       instructions: (json['instructions'] as List<dynamic>)
-          .map((e) => e as String)
+          .map((e) => Instructions.fromJson(e as Map<String, dynamic>))
           .toList(),
       id: json['id'] as String,
       cuisine: json['cuisine'] as String,
       description: json['description'] as String,
       allergens: json['allergens'] as String,
       servings: json['servings'] as String,
+      totalRecipeTime: json['totalRecipeTime'] as String,
+      level: json['level'] as String,
+      calories: json['calories'] as String,
       nutritionInformation: NutritionInformation.fromJson(
-          Map<String, String>.from(json['nutritionInformation'] as Map)),
+          json['nutritionInformation'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$PromptResponseToJson(PromptResponse instance) =>
     <String, dynamic>{
       'title': instance.title,
       'ingredients': instance.ingredients,
-      'instructions': instance.instructions,
+      'instructions': instance.instructions.map((e) => e.toJson()).toList(),
       'id': instance.id,
       'cuisine': instance.cuisine,
       'description': instance.description,
       'allergens': instance.allergens,
       'servings': instance.servings,
+      'totalRecipeTime': instance.totalRecipeTime,
+      'level': instance.level,
+      'calories': instance.calories,
       'nutritionInformation': instance.nutritionInformation.toJson(),
+    };
+
+Instructions _$InstructionsFromJson(Map<String, dynamic> json) => Instructions(
+      stepTitle: json['stepTitle'] as String,
+      detailInstructions: json['detailInstructions'] as String,
+    );
+
+Map<String, dynamic> _$InstructionsToJson(Instructions instance) =>
+    <String, dynamic>{
+      'stepTitle': instance.stepTitle,
+      'detailInstructions': instance.detailInstructions,
     };
 
 NutritionInformation _$NutritionInformationFromJson(
         Map<String, dynamic> json) =>
     NutritionInformation(
-      calories: json['calories'] as String,
       fat: json['fat'] as String,
       saturatedFat: json['saturatedFat'] as String,
       cholesterol: json['cholesterol'] as String,
@@ -54,7 +70,6 @@ NutritionInformation _$NutritionInformationFromJson(
 Map<String, dynamic> _$NutritionInformationToJson(
         NutritionInformation instance) =>
     <String, dynamic>{
-      'calories': instance.calories,
       'fat': instance.fat,
       'saturatedFat': instance.saturatedFat,
       'cholesterol': instance.cholesterol,

@@ -4,7 +4,7 @@ class ColorConstants {
   // Light Theme Mode
   static const primary1 = Color(0xff54d3f8);
   static const onPrimary1 = Colors.white;
-  static const primaryContainer1 = Color(0xffB3E5FC);
+  static const primaryContainer1 = Color(0xffddf3fd);
   static const onPrimaryContainer1 = Color(0xff002B2D);
   static const secondary1 = Color(0xff4285F4);
   static const onSecondary1 = Colors.black;
@@ -14,9 +14,9 @@ class ColorConstants {
   static const onError1 = Colors.white;
   static const errorContainer1 = Color(0xffF2B8B5);
   static const onErrorContainer1 = Color(0xff470001);
-  static const background1 = Color(0xffFBF9F7);
+  static const background1 = Color(0xffffffff);
   static const onBackground1 = Color(0xff1A1C1E);
-  static const surface1 = Color(0xffffffff);
+  static const surface1 = Color(0xfff7fbfd);
   static const onSurface1 = Color(0xff1A1C1E);
   static const surfaceVariant1 = Color(0xffE1E5EA);
   static const onSurfaceVariant1 = Color(0xff49454F);
@@ -30,11 +30,11 @@ class ColorConstants {
   static const surfaceTint1 = Color(0xff4FC3F7);
 
   // Dark Theme Mode
-  static const primary2 = Color(0xff6a7075);
-  static const onPrimary2 = Color(0xffffffff);
-  static const primaryContainer2 = Color(0xff61a0ca);
+  static const primary2 = Color(0xfff0f4f8);
+  static const onPrimary2 = Color(0xff486581);
+  static const primaryContainer2 = Color(0xff7596a8);
   static const onPrimaryContainer2 = Color(0xffD0EFFF);
-  static const secondary2 = Color(0xff82B1FF);
+  static const secondary2 = Color(0xff829ab1);
   static const onSecondary2 = Colors.black;
   static const secondaryContainer2 = Color(0xff669DF6);
   static const onSecondaryContainer2 = Color(0xff0955a6);
@@ -42,10 +42,10 @@ class ColorConstants {
   static const onError2 = Colors.black;
   static const errorContainer2 = Color(0xffB3261E);
   static const onErrorContainer2 = Color(0xffFADAD7);
-  static const background2 = Color(0xff258fcc);
+  static const background2 = Color(0xff102a43);
   static const onBackground2 = Color(0xffE0E0E0);
-  static const surface2 = Color(0xff8f9b9e);
-  static const onSurface2 = Color(0xff070707);
+  static const surface2 = Color(0xff486581);
+  static const onSurface2 = Color(0xffbcccdc);
   static const surfaceVariant2 = Color(0xff37474F);
   static const onSurfaceVariant2 = Color(0xffCFCFCF);
   static const outline2 = Color(0xff919191);
