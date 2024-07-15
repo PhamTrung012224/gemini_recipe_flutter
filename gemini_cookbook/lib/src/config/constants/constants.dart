@@ -47,12 +47,6 @@ class TextStyleConstants {
       fontWeight: FontWeight.w500,
       fontSize: 13);
 
-  static final TextStyle loginButtonTitle = TextStyle(
-      color: Colors.white70,
-      fontFamily: GoogleFonts.poppins().fontFamily,
-      fontWeight: FontWeight.w700,
-      fontSize: 20);
-
   static final TextStyle recipeContent = TextStyle(
       fontFamily: GoogleFonts.poppins().fontFamily,
       fontWeight: FontWeight.w500,
@@ -69,14 +63,14 @@ class TextStyleConstants {
       fontWeight: FontWeight.w600,
       fontSize: 13);
 
-  static final TextStyle inputText = TextStyle(
-      color: Colors.black54,
+  static final TextStyle linkText = TextStyle(
+      color: Colors.blue,
       fontFamily: GoogleFonts.poppins().fontFamily,
       fontWeight: FontWeight.w600,
-      fontSize: 13);
+      fontSize: 14);
 
   static final TextStyle invalidText = TextStyle(
-      color: Colors.black54,
+      color: Colors.black87,
       fontFamily: GoogleFonts.poppins().fontFamily,
       fontWeight: FontWeight.w600,
       fontSize: 14);
@@ -85,7 +79,8 @@ class TextStyleConstants {
 class ImageConstants {
   static const String onBoardingBackground =
       'assets/images/onBoardingBackground.jpg';
-  static const String loginBackground = 'assets/images/loginBackground3.jpg';
+  static const String loginBackground = 'assets/images/loginBackground1.jpg';
+  static const String loginDarkBackground = 'assets/images/loginBackground3.jpg';
   static const String recipeBackground = 'assets/images/recipeBackground.jpg';
   static const String recipeDarkBackground =
       'assets/images/recipeDarkBackground.jpg';
@@ -103,10 +98,14 @@ class IconConstants {
   static const String servingsIcon = 'assets/icons/servings.svg';
   static const String logoutIcon = 'assets/icons/logout.svg';
   static const String accountIcon = 'assets/icons/account.svg';
+  static const String upIcon = 'assets/icons/expand_circle_up.svg';
+  static const String downIcon = 'assets/icons/expand_circle_down.svg';
+  static const String youtubeIcon = 'assets/icons/youtube.svg';
 
   //Icon Data
   static const IconData iconPassword = Icons.lock_outline;
   static const IconData iconMail = Icons.mail;
+  static const IconData iconName = Icons.person;
   static const IconData iconHidePassword = Icons.visibility;
   static const IconData iconShowPassword = Icons.visibility_off;
 }
@@ -150,7 +149,16 @@ class Constants {
     '^',
     '&'
   ];
-  static const String rejectEmailString = r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$';
+  static const String rejectNameString =
+      r'^[A-Za-z0-9](?!.*\s{2})[A-Za-z0-9\s]{0,23}[A-Za-z0-9]$';
+  static const String rejectEmailString =
+      r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
+      r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
+      r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
+      r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
+      r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
+      r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
+      r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
   static const String rejectPasswordString =
-      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^]).{8,}$';
+      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^])(?!.*\s).{8,}$';
 }

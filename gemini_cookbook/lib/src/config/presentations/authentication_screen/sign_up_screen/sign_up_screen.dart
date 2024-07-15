@@ -6,8 +6,8 @@ import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_up_screen/bloc/sign_up_bloc.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_up_screen/bloc/sign_up_event.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_up_screen/bloc/sign_up_state.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/home_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:user_repository/user_repository.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -48,7 +48,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
             signUpRequired = true;
           });
         } else if (state is SignUpFailure) {
-          return;
+          signUpRequired = false;
+          showDialog<String>(
+              builder: (context) => Dialog(
+                    child: SingleChildScrollView(
+                        child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 12, top: 16, bottom: 16, right: 12),
+                      child: Text(
+                        state.errorMessage
+                            .replaceAll(RegExp(r'\[.*?\]\s?'), ''),
+                        style: TextStyleConstants.medium,
+                      ),
+                    )),
+                  ),
+              context: context);
         }
       },
       child: Form(
@@ -59,13 +73,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               CustomTextField(
                 width: MediaQuery.of(context).size.width,
                 text: 'Email',
-                style: TextStyleConstants.inputText,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13),
                 prefixIcon: const Icon(IconConstants.iconMail),
                 textEditingController: emailController,
                 obscureText: false,
                 containerBorderRadius: 8,
-                containerColor: Colors.white,
-                prefixIconColor: Colors.black54,
+                containerColor: Theme.of(context).colorScheme.surface,
+                prefixIconColor: Theme.of(context).colorScheme.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 focusNode: emailFocus,
                 validator: (val) {
@@ -83,13 +101,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               CustomTextField(
                 width: MediaQuery.of(context).size.width,
                 text: 'Password',
-                style: TextStyleConstants.inputText,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13),
                 prefixIcon: const Icon(IconConstants.iconPassword),
                 textEditingController: passwordController,
                 obscureText: obscurePassword,
                 containerBorderRadius: 8,
-                containerColor: Colors.white,
-                prefixIconColor: Colors.black54,
+                containerColor: Theme.of(context).colorScheme.surface,
+                prefixIconColor: Theme.of(context).colorScheme.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 focusNode: passwordFocus,
                 validator: (val) {
@@ -111,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Icon(obscurePassword
                         ? IconConstants.iconHidePassword
                         : IconConstants.iconShowPassword)),
-                suffixIconColor: Colors.black54,
+                suffixIconColor: Theme.of(context).colorScheme.onSurface,
                 onChanged: (value) {
                   if (value!.contains(RegExp(r'(?=.*[A-Z])'))) {
                     setState(() {
@@ -207,18 +229,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
               CustomTextField(
                 width: MediaQuery.of(context).size.width,
                 text: 'Name',
-                style: TextStyleConstants.inputText,
-                prefixIcon: const Icon(IconConstants.iconMail),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13),
+                prefixIcon: const Icon(IconConstants.iconName),
                 textEditingController: nameController,
                 obscureText: false,
                 containerBorderRadius: 8,
-                containerColor: Colors.white,
-                prefixIconColor: Colors.black54,
+                containerColor: Theme.of(context).colorScheme.surface,
+                prefixIconColor: Theme.of(context).colorScheme.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 focusNode: nameFocus,
                 validator: (val) {
                   if (val!.isEmpty) {
                     return 'Please fill in this field';
+                  } else if (!RegExp(Constants.rejectNameString)
+                      .hasMatch(val)) {
+                    return 'Please enter a valid name';
                   }
                   return null;
                 },
@@ -234,7 +263,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             email: emailController.value.text,
                             name: nameController.value.text,
                           );
-                          context.read<SignUpBloc>().add(SignUpRequired(myUser: myUser, password: passwordController.value.text));
+                          context.read<SignUpBloc>().add(SignUpRequired(
+                              myUser: myUser,
+                              password: passwordController.value.text));
                         }
                       },
                       child: Container(
@@ -242,16 +273,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 40,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                            color: Colors.green.shade400,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(24))),
                         child: Text(
                           'Sign up',
-                          style: TextStyleConstants.loginButtonTitle,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20),
                         ),
                       ),
                     )
-                  : const CircularProgressIndicator(),
+                  : Center(
+                      child: LoadingAnimationWidget.discreteCircle(
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 40,
+                      ),
+                    ),
             ],
           )),
     );

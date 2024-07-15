@@ -31,7 +31,8 @@ List out any ingredients that are potential allergens.
 Provide a summary of how many people the recipe will serve and the nutritional information per serving.
 
 
-If the prompt does not contain food-related information, provide a recipe from a randomly selected Southeast Asian cuisine: Vietnamese, Thai, Laotian, or Korean..
+If the prompt does not contain any Cuisines, provide a recipe from a randomly selected Asian cuisine with given Dietary Restrictions and Ingredients.
+If the prompt does not contain any food-related information, provide a recipe from a randomly selected Asian cuisine.
 
 Note: ${PromptObject.formatting}''';
 
@@ -63,6 +64,7 @@ Note: ${PromptObject.formatting}''';
   }
 }
 
+calories should have unit kcal
 uniqueId should be unique and of type String.
 title, description, cuisine, allergens, and servings should be of String type.
 ingredients, should be of type List<String>.

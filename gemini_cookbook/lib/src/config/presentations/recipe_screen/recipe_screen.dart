@@ -1,16 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gemini_cookbook/src/config/components/ui_icon.dart';
 import 'package:gemini_cookbook/src/config/components/ui_space.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/models/objects/prompt_response_object.dart';
+import 'package:gemini_cookbook/src/config/models/objects/youtube_response_object.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../components/gradient_text.dart';
 
 class RecipeScreen extends StatefulWidget {
   final PromptResponse promptResponse;
-  const RecipeScreen({super.key, required this.promptResponse});
+  final YoutubeResponse youtubeResponse;
+  const RecipeScreen(
+      {super.key, required this.promptResponse, required this.youtubeResponse});
 
   @override
   State<RecipeScreen> createState() => _RecipeScreenState();
@@ -22,6 +24,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
   late final NutritionInformation nutritionInformation;
   late final List<String> ingredients;
   late final List<Instructions> instructions;
+  late final List<YoutubeItem> youtubeResults;
   late List<bool> isOnSwitch;
   bool isDarkMode = false;
 
@@ -32,6 +35,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
     nutritionInformation = widget.promptResponse.nutritionInformation;
     ingredients = widget.promptResponse.ingredients;
     instructions = widget.promptResponse.instructions;
+    youtubeResults = widget.youtubeResponse.items;
 
     isOnSwitch = List.filled(instructions.length, false);
     super.initState();
@@ -159,7 +163,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                             Flexible(
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 18, right: 20, left: 20, bottom: 18),
+                                    top: 18, bottom: 18, left: 20, right: 20),
                                 child: Text(
                                   widget.promptResponse.title,
                                   textAlign: TextAlign.center,
@@ -181,6 +185,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                             children: [
                               Container(
                                 alignment: Alignment.center,
+                                padding: const EdgeInsets.only(top: 20),
                                 width:
                                     (MediaQuery.of(context).size.width - 32) /
                                         3,
@@ -188,10 +193,10 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     (MediaQuery.of(context).size.width - 32) /
                                         3,
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(bottom: 4.0),
+                                      padding:
+                                          const EdgeInsets.only(bottom: 4.0),
                                       child: UIIcon(
                                           size: 48,
                                           icon: IconConstants.clockIcon,
@@ -199,6 +204,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     ),
                                     Text(
                                       widget.promptResponse.totalRecipeTime,
+                                      textAlign: TextAlign.center,
                                       style:
                                           TextStyleConstants.recipeContentBold,
                                     )
@@ -207,6 +213,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                               ),
                               Container(
                                 alignment: Alignment.center,
+                                padding: const EdgeInsets.only(top: 20),
                                 width:
                                     (MediaQuery.of(context).size.width - 32) /
                                         3,
@@ -214,7 +221,6 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     (MediaQuery.of(context).size.width - 32) /
                                         3,
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Padding(
                                       padding: EdgeInsets.only(bottom: 4.0),
@@ -225,6 +231,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     ),
                                     Text(
                                       widget.promptResponse.calories,
+                                      textAlign: TextAlign.center,
                                       style:
                                           TextStyleConstants.recipeContentBold,
                                     )
@@ -233,6 +240,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                               ),
                               Container(
                                 alignment: Alignment.center,
+                                padding: const EdgeInsets.only(top: 20),
                                 width:
                                     (MediaQuery.of(context).size.width - 32) /
                                         3,
@@ -240,7 +248,6 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     (MediaQuery.of(context).size.width - 32) /
                                         3,
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
                                       padding:
@@ -254,6 +261,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     ),
                                     Text(
                                       widget.promptResponse.level,
+                                      textAlign: TextAlign.center,
                                       style:
                                           TextStyleConstants.recipeContentBold,
                                     )
@@ -505,7 +513,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                   color: Theme.of(context).colorScheme.primary),
                             ),
                             GradientText(
-                              'Instructions',
+                              'Directions',
                               style: TextStyleConstants.title,
                               gradient: LinearGradient(colors: [
                                 Theme.of(context).colorScheme.primary,
@@ -522,7 +530,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
                             top: 12, bottom: 16, left: 16, right: 16),
                         alignment: Alignment.centerLeft,
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(12),bottomRight: Radius.circular(12)),
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(12),
+                              bottomRight: Radius.circular(12)),
                           color: Theme.of(context).colorScheme.background,
                         ),
                         child: ListView.builder(
@@ -546,7 +556,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                         style: TextStyleConstants.headline1,
                                         gradient: LinearGradient(colors: [
                                           Theme.of(context).colorScheme.primary,
-                                          Theme.of(context).colorScheme.onSurface
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
                                         ]),
                                       ),
                                     ),
@@ -554,16 +566,19 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                       width: 8,
                                     ),
                                     GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isOnSwitch[idx] = !isOnSwitch[idx];
-                                        });
-                                      },
-                                      child: const Icon(
-                                        Icons.expand_circle_down_outlined,
-                                        size: 24,
-                                      ),
-                                    ),
+                                        onTap: () {
+                                          setState(() {
+                                            isOnSwitch[idx] = !isOnSwitch[idx];
+                                          });
+                                        },
+                                        child: UIIcon(
+                                            size: 24,
+                                            icon: isOnSwitch[idx]
+                                                ? IconConstants.upIcon
+                                                : IconConstants.downIcon,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary)),
                                   ],
                                 ),
                                 isOnSwitch[idx]
@@ -577,6 +592,87 @@ class _RecipeScreenState extends State<RecipeScreen> {
                             ),
                           ),
                           itemCount: instructions.length,
+                        ),
+                      ),
+                      const UISpace(height: 24),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16))),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: UIIcon(
+                                  size: 26,
+                                  icon: IconConstants.youtubeIcon,
+                                  color: Colors.red),
+                            ),
+                            GradientText(
+                              'Reference Videos',
+                              style: TextStyleConstants.title,
+                              gradient: const LinearGradient(
+                                  colors: [Colors.red, Colors.red]),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const UISpace(height: 4),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        padding: const EdgeInsets.only(
+                            top: 12, bottom: 16, left: 16, right: 16),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(12),
+                              bottomRight: Radius.circular(12)),
+                          color: Theme.of(context).colorScheme.background,
+                        ),
+                        child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, idx) => Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8)),
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    final url = Uri.parse(
+                                        'https://www.youtube.com/watch?v=${youtubeResults[idx].id.videoId}');
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url,
+                                          webViewConfiguration:
+                                              const WebViewConfiguration());
+                                    }
+                                  },
+                                  child: Image.network(youtubeResults[idx]
+                                      .snippet
+                                      .thumbnails
+                                      .high
+                                      .url),
+                                ),
+                                Text(
+                                  youtubeResults[idx].snippet.title,
+                                  style: TextStyleConstants.recipeContentBold,
+                                ),
+                                Text(
+                                  'Channel: ${youtubeResults[idx].snippet.channelTitle}',
+                                  style: TextStyleConstants.normal,
+                                ),
+                              ],
+                            ),
+                          ),
+                          itemCount: youtubeResults.length,
                         ),
                       ),
                       const UISpace(height: 48),

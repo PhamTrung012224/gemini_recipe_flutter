@@ -6,8 +6,8 @@ import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_event.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_state.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/home_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -42,6 +42,19 @@ class _SignInScreenState extends State<SignInScreen> {
           setState(() {
             signInRequired = false;
             errorMessage = 'Invalid email or password';
+            showDialog<String>(
+                builder: (context) => Dialog(
+                      child: SingleChildScrollView(
+                          child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12, top: 16, bottom: 16, right: 12),
+                        child: Text(
+                          errorMessage!,
+                          style: TextStyleConstants.medium,
+                        ),
+                      )),
+                    ),
+                context: context);
           });
         }
       },
@@ -53,13 +66,17 @@ class _SignInScreenState extends State<SignInScreen> {
               CustomTextField(
                 width: MediaQuery.of(context).size.width,
                 text: 'Email',
-                style: TextStyleConstants.inputText,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13),
                 prefixIcon: const Icon(IconConstants.iconMail),
                 textEditingController: emailController,
                 obscureText: false,
                 containerBorderRadius: 8,
-                containerColor: Colors.white,
-                prefixIconColor: Colors.black54,
+                containerColor: Theme.of(context).colorScheme.surface,
+                prefixIconColor: Theme.of(context).colorScheme.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 focusNode: emailFocus,
                 validator: (val) {
@@ -77,13 +94,17 @@ class _SignInScreenState extends State<SignInScreen> {
               CustomTextField(
                 width: MediaQuery.of(context).size.width,
                 text: 'Password',
-                style: TextStyleConstants.inputText,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13),
                 prefixIcon: const Icon(IconConstants.iconPassword),
                 textEditingController: passwordController,
                 obscureText: obscurePassword,
                 containerBorderRadius: 8,
-                containerColor: Colors.white,
-                prefixIconColor: Colors.black54,
+                containerColor: Theme.of(context).colorScheme.surface,
+                prefixIconColor: Theme.of(context).colorScheme.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 focusNode: passwordFocus,
                 validator: (val) {
@@ -105,14 +126,16 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Icon(obscurePassword
                         ? IconConstants.iconHidePassword
                         : IconConstants.iconShowPassword)),
-                suffixIconColor: Colors.black54,
+                suffixIconColor: Theme.of(context).colorScheme.onSurface,
               ),
               const UISpace(height: 20),
               (!signInRequired)
                   ? GestureDetector(
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
-                          context.read<SignInBloc>().add(SignInRequired(email: emailController.value.text, password: passwordController.value.text));
+                          context.read<SignInBloc>().add(SignInRequired(
+                              email: emailController.value.text,
+                              password: passwordController.value.text));
                         }
                       },
                       child: Container(
@@ -120,16 +143,25 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: 40,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                            color: Colors.green.shade400,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(24))),
                         child: Text(
                           'Sign in',
-                          style: TextStyleConstants.loginButtonTitle,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20),
                         ),
                       ),
                     )
-                  : const CircularProgressIndicator(),
+                  : Center(
+                      child: LoadingAnimationWidget.discreteCircle(
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 40,
+                      ),
+                    ),
             ],
           )),
     );

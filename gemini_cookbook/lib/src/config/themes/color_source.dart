@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ColorConstants {
   // Light Theme Mode
   static const primary1 = Color(0xff54d3f8);
-  static const onPrimary1 = Colors.white;
+  static const onPrimary1 = Color(0xffe6f2f8);
   static const primaryContainer1 = Color(0xffddf3fd);
   static const onPrimaryContainer1 = Color(0xff002B2D);
   static const secondary1 = Color(0xff4285F4);
@@ -14,7 +14,7 @@ class ColorConstants {
   static const onError1 = Colors.white;
   static const errorContainer1 = Color(0xffF2B8B5);
   static const onErrorContainer1 = Color(0xff470001);
-  static const background1 = Color(0xffffffff);
+  static const background1 = Color(0xffe6f2f8);
   static const onBackground1 = Color(0xff1A1C1E);
   static const surface1 = Color(0xfff7fbfd);
   static const onSurface1 = Color(0xff1A1C1E);

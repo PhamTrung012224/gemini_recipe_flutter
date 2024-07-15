@@ -15,20 +15,25 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   // Chip
   void _onTapCuisineChip(TapCuisineChip event, Emitter<HomeScreenState> emit) {
     // Implement logic here
-    emit(state.copyWith(isCuisinesSelected: event.isCuisineSelected,prompt: event.cuisinesPrompt));
+    emit(state.copyWith(
+        isCuisinesSelected: event.isCuisineSelected,
+        prompt: event.cuisinesPrompt));
   }
 
   void _onTapIngredientChip(
       TapIngredientChip event, Emitter<HomeScreenState> emit) {
     // Implement logic here
-    emit(state.copyWith(isIngredientsSelected: event.isIngredientsSelected,prompt: event.ingredientsPrompt));
+    emit(state.copyWith(
+        isIngredientsSelected: event.isIngredientsSelected,
+        prompt: event.ingredientsPrompt));
   }
 
   void _onTapDietaryRestrictionChip(
       TapDietaryRestrictionChip event, Emitter<HomeScreenState> emit) {
     // Implement logic here
     emit(state.copyWith(
-        isDietaryRestrictionsSelected: event.isDietaryRestrictionSelected,prompt: event.dietaryRestrictionPrompt));
+        isDietaryRestrictionsSelected: event.isDietaryRestrictionSelected,
+        prompt: event.dietaryRestrictionPrompt));
   }
 
   // Prompt Button
@@ -43,12 +48,12 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     emit(state.copyWith(
         isIngredientsSelected: event.isIngredientsSelected,
         isDietaryRestrictionsSelected: event.isDietaryRestrictionSelected,
-        isCuisinesSelected: event.isCuisineSelected,prompt: event.promptObject));
+        isCuisinesSelected: event.isCuisineSelected,
+        prompt: event.promptObject));
   }
 
   void _onTapSubmitPrompt(
       TapSubmitPromptEvent event, Emitter<HomeScreenState> emit) {
     // Implement logic here
   }
-
 }

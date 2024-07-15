@@ -56,6 +56,12 @@ dependencies:
   safe_text: ^0.0.3
   flutter_launcher_icons: ^0.13.1
   firebase_core: ^3.1.1
+  cloud_firestore: ^5.1.0
+  dio: ^5.5.0+1
+  url_launcher: ^6.3.0
+  firebase_app_check: ^0.3.0+3
+
+
 
 dev_dependencies:
   json_serializable: ^6.8.0
