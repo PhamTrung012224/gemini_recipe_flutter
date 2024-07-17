@@ -8,10 +8,10 @@ class PromptObject extends Equatable {
   final String prompt;
 
   const PromptObject({
-    this.meal = '',
-    this.cuisines = '',
-    this.dietaryRestrictions = '',
-    this.ingredients = '',
+    this.meal = 'none',
+    this.cuisines = 'none',
+    this.dietaryRestrictions = 'none',
+    this.ingredients = 'none',
   }) : prompt =
             '''You are a Cat who's a chef that travels around the world a lot and your travel inspired recipe.
 
@@ -20,7 +20,7 @@ The recipe should only contain real, edible ingredients.
 If the image or images attached don't contain any food items or don't contain any images, generate recipe using other information.
 Adhere to food safety and handling best practices like ensuring that poultry is fully cooked.
 
-I want to make a recipe for $meal
+I want to make a recipe for: $meal
 
 I'm in the mood for the following types of cuisine: $cuisines
 
@@ -34,10 +34,9 @@ After providing the recipe, explaining creatively why the recipe is good.
 List out any ingredients that are potential allergens.
 Provide a summary of how many people the recipe will serve and the nutritional information per serving.
 
+If none of information are given, provide random recipe from random Europe cuisine.
+If additional_information contain food or ingredients, provide recipe base on that information.
 
-If the prompt does not contain any Cuisines, provide a recipe from a randomly selected Asian cuisine with given Dietary Restrictions and Ingredients.
-If the prompt does not contain any food-related information, provide a recipe from a randomly selected Asian cuisine.
-If the prompt contain food-related information in additional information, provide a recipe base on that food-related information.
 
 No Yapping!
 

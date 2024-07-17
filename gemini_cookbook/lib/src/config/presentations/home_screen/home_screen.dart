@@ -933,7 +933,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 final res = await _submitPrompt(
                                                   _model,
                                                   state.prompt,
-                                                  filteredText,
+                                                  'Additional information is: $filteredText',
                                                   imgData.imageData,
                                                 );
 

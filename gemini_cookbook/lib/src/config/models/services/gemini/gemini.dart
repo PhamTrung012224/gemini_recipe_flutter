@@ -25,9 +25,8 @@ class GeminiService {
     final input = [
       Content.multi([
         ...images!,
+        TextPart(prompt.prompt),
         TextPart(additionalInformation),
-        TextPart(prompt.prompt)
-
       ])
     ];
 
@@ -47,7 +46,7 @@ class GeminiService {
       PromptObject prompt,
       String additionalInformation) async {
     final input = [
-      Content.multi([TextPart(additionalInformation),TextPart(prompt.prompt) ])
+      Content.multi([TextPart(prompt.prompt), TextPart(additionalInformation)])
     ];
     return await model.generateContent(
       input,
