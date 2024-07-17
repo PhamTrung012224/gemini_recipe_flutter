@@ -19,6 +19,7 @@ class RecipeScreen extends StatefulWidget {
 }
 
 class _RecipeScreenState extends State<RecipeScreen> {
+  late final String meal;
   late final String allergens;
   late final String servings;
   late final NutritionInformation nutritionInformation;
@@ -30,6 +31,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
 
   @override
   void initState() {
+    meal = widget.promptResponse.meal;
     allergens = widget.promptResponse.allergens;
     servings = widget.promptResponse.servings;
     nutritionInformation = widget.promptResponse.nutritionInformation;
@@ -52,17 +54,26 @@ class _RecipeScreenState extends State<RecipeScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: isDarkMode
-                    ? const AssetImage(ImageConstants.recipeDarkBackground)
-                    : const AssetImage(ImageConstants.recipeBackground),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          (youtubeResults.isNotEmpty)
+              ? Image.network(
+                  'https://img.youtube.com/vi/${youtubeResults[0].id.videoId}/mqdefault.jpg',
+                  fit: BoxFit.cover,
+                  height: MediaQuery.of(context).size.width * 0.86,
+                  width: MediaQuery.of(context).size.width * 0.86 / 9 * 16,
+                  filterQuality: FilterQuality.medium,
+                )
+              : Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: isDarkMode
+                          ? const AssetImage(
+                              ImageConstants.recipeDarkBackground)
+                          : const AssetImage(ImageConstants.recipeBackground),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
           SafeArea(
             child: CustomScrollView(
               slivers: [
@@ -179,8 +190,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                           width: MediaQuery.of(context).size.width - 32,
                           decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.background,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(16))),
+                              borderRadius: Constants.borderRadius),
                           child: Row(
                             children: [
                               Container(
@@ -191,7 +201,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                         3,
                                 height:
                                     (MediaQuery.of(context).size.width - 32) /
-                                        3,
+                                            3 +
+                                        12,
                                 child: Column(
                                   children: [
                                     Padding(
@@ -219,7 +230,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                         3,
                                 height:
                                     (MediaQuery.of(context).size.width - 32) /
-                                        3,
+                                            3 +
+                                        12,
                                 child: Column(
                                   children: [
                                     const Padding(
@@ -246,7 +258,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                         3,
                                 height:
                                     (MediaQuery.of(context).size.width - 32) /
-                                        3,
+                                            3 +
+                                        12,
                                 child: Column(
                                   children: [
                                     Padding(
@@ -275,8 +288,58 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         width: MediaQuery.of(context).size.width - 32,
                         decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16))),
+                            borderRadius: Constants.borderRadius),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: UIIcon(
+                                      size: 26,
+                                      icon: IconConstants.mealIcon,
+                                      color: Colors.orange),
+                                ),
+                                GradientText(
+                                  'Meal',
+                                  style: TextStyleConstants.title,
+                                  gradient: LinearGradient(colors: [
+                                    Colors.orange.shade300,
+                                    Colors.orange.shade300
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(
+                                  left: 8, right: 8, top: 10, bottom: 10),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          width: 4,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface))),
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      meal,
+                                      style: TextStyleConstants.recipeContent,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      const UISpace(height: 16),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius: Constants.borderRadius),
                         child: Column(
                           children: [
                             Row(
@@ -303,6 +366,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       top: BorderSide(
+                                          width: 4,
                                           color: Theme.of(context)
                                               .colorScheme
                                               .surface))),
@@ -325,8 +389,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         width: MediaQuery.of(context).size.width - 32,
                         decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16))),
+                            borderRadius: Constants.borderRadius),
                         child: Column(
                           children: [
                             Row(
@@ -353,6 +416,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       top: BorderSide(
+                                          width: 4,
                                           color: Theme.of(context)
                                               .colorScheme
                                               .surface))),
@@ -375,8 +439,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         width: MediaQuery.of(context).size.width - 32,
                         decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16))),
+                            borderRadius: Constants.borderRadius),
                         child: Column(
                           children: [
                             Row(
@@ -404,6 +467,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                 decoration: BoxDecoration(
                                     border: Border(
                                         top: BorderSide(
+                                            width: 4,
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .surface))),
@@ -451,8 +515,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         width: MediaQuery.of(context).size.width - 32,
                         decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16))),
+                            borderRadius: Constants.borderRadius),
                         child: Column(
                           children: [
                             Row(
@@ -480,6 +543,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                 decoration: BoxDecoration(
                                     border: Border(
                                         top: BorderSide(
+                                            width: 4,
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .surface))),
@@ -531,8 +595,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         alignment: Alignment.centerLeft,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(12),
-                              bottomRight: Radius.circular(12)),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)),
                           color: Theme.of(context).colorScheme.background,
                         ),
                         child: ListView.builder(
@@ -595,86 +659,101 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         ),
                       ),
                       const UISpace(height: 24),
-                      Container(
-                        width: MediaQuery.of(context).size.width - 32,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.background,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16))),
-                        child: Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: UIIcon(
-                                  size: 26,
-                                  icon: IconConstants.youtubeIcon,
-                                  color: Colors.red),
-                            ),
-                            GradientText(
-                              'Reference Videos',
-                              style: TextStyleConstants.title,
-                              gradient: const LinearGradient(
-                                  colors: [Colors.red, Colors.red]),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const UISpace(height: 4),
-                      Container(
-                        width: MediaQuery.of(context).size.width - 32,
-                        padding: const EdgeInsets.only(
-                            top: 12, bottom: 16, left: 16, right: 16),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(12),
-                              bottomRight: Radius.circular(12)),
-                          color: Theme.of(context).colorScheme.background,
-                        ),
-                        child: ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (context, idx) => Container(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(8)),
-                              color: Theme.of(context).colorScheme.background,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      (youtubeResults.isNotEmpty)
+                          ? Column(
                               children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    final url = Uri.parse(
-                                        'https://www.youtube.com/watch?v=${youtubeResults[idx].id.videoId}');
-                                    if (await canLaunchUrl(url)) {
-                                      await launchUrl(url,
-                                          webViewConfiguration:
-                                              const WebViewConfiguration());
-                                    }
-                                  },
-                                  child: Image.network(youtubeResults[idx]
-                                      .snippet
-                                      .thumbnails
-                                      .high
-                                      .url),
+                                Container(
+                                  width: MediaQuery.of(context).size.width - 32,
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          topRight: Radius.circular(16))),
+                                  child: Row(
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: UIIcon(
+                                            size: 26,
+                                            icon: IconConstants.youtubeIcon,
+                                            color: Colors.red),
+                                      ),
+                                      GradientText(
+                                        'Reference Videos',
+                                        style: TextStyleConstants.title,
+                                        gradient: const LinearGradient(
+                                            colors: [Colors.red, Colors.red]),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                  youtubeResults[idx].snippet.title,
-                                  style: TextStyleConstants.recipeContentBold,
-                                ),
-                                Text(
-                                  'Channel: ${youtubeResults[idx].snippet.channelTitle}',
-                                  style: TextStyleConstants.normal,
+                                const UISpace(height: 4),
+                                Container(
+                                  width: MediaQuery.of(context).size.width - 32,
+                                  padding: const EdgeInsets.only(
+                                      top: 12, bottom: 16, left: 16, right: 16),
+                                  alignment: Alignment.centerLeft,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(10),
+                                        bottomRight: Radius.circular(10)),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .background,
+                                  ),
+                                  child: ListView.builder(
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, idx) => Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 6),
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(8)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () async {
+                                              final url = Uri.parse(
+                                                  'https://www.youtube.com/watch?v=${youtubeResults[idx].id.videoId}');
+                                              if (await canLaunchUrl(url)) {
+                                                await launchUrl(url,
+                                                    webViewConfiguration:
+                                                        const WebViewConfiguration());
+                                              }
+                                            },
+                                            child: Image.network(
+                                              'https://img.youtube.com/vi/${youtubeResults[idx].id.videoId}/mqdefault.jpg',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                          Text(
+                                            youtubeResults[idx].snippet.title,
+                                            style: TextStyleConstants
+                                                .recipeContentBold,
+                                          ),
+                                          Text(
+                                            'Channel: ${youtubeResults[idx].snippet.channelTitle}',
+                                            style: TextStyleConstants.normal,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    itemCount: youtubeResults.length,
+                                  ),
                                 ),
                               ],
-                            ),
-                          ),
-                          itemCount: youtubeResults.length,
-                        ),
-                      ),
+                            )
+                          : const SizedBox.shrink(),
                       const UISpace(height: 48),
                     ],
                   ),

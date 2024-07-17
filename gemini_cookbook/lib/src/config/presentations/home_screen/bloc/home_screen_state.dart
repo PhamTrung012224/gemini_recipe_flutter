@@ -6,9 +6,19 @@ class HomeScreenState extends Equatable {
   final List<bool> isCuisinesSelected;
   final List<bool> isDietaryRestrictionsSelected;
   final List<bool> isIngredientsSelected;
+  final List<bool> isMealSelected;
 
   const HomeScreenState({
-    this.prompt=const PromptObject(),
+    this.prompt = const PromptObject(),
+    this.isMealSelected = const [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     this.isIngredientsSelected = const [
       false,
       false,
@@ -49,20 +59,23 @@ class HomeScreenState extends Equatable {
       bool? isButtonPressed,
       List<bool>? isCuisinesSelected,
       List<bool>? isDietaryRestrictionsSelected,
-      List<bool>? isIngredientsSelected}) {
+      List<bool>? isIngredientsSelected,
+      List<bool>? isMealSelected}) {
     return HomeScreenState(
-        prompt: prompt?? this.prompt,
+        prompt: prompt ?? this.prompt,
         isCuisinesSelected: isCuisinesSelected ?? this.isCuisinesSelected,
         isDietaryRestrictionsSelected:
             isDietaryRestrictionsSelected ?? this.isDietaryRestrictionsSelected,
         isIngredientsSelected:
-            isIngredientsSelected ?? this.isIngredientsSelected);
+            isIngredientsSelected ?? this.isIngredientsSelected,
+        isMealSelected: isMealSelected ?? this.isMealSelected);
   }
 
   @override
   List<Object?> get props => [
         isCuisinesSelected,
         isDietaryRestrictionsSelected,
-        isIngredientsSelected
+        isIngredientsSelected,
+        isMealSelected
       ];
 }

@@ -44,6 +44,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<String> meal = [
+    'breakfast',
+    'brunch',
+    'elevenses',
+    'lunch',
+    'tea',
+    'supper',
+    'dinner',
+  ];
   final List<String> ingredients = [
     'oil',
     'butter',
@@ -256,8 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             .loginBackground),
                                                     context)
                                                 .catchError((error) {
-                                              log(
-                                                  'Error preloading image: $error');
+                                              log('Error preloading image: $error');
                                             });
                                             context
                                                 .read<SignInBloc>()
@@ -497,6 +505,80 @@ class _HomeScreenState extends State<HomeScreen> {
                                             left: 10, top: 12, bottom: 8),
                                         child: Container(
                                             alignment: Alignment.topLeft,
+                                            child: Text('I want to make:',
+                                                style:
+                                                    TextStyleConstants.medium)),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8, bottom: 12),
+                                        child: InlineChoice.multiple(
+                                            itemCount: meal.length,
+                                            itemBuilder: (context, idx) =>
+                                                BlocBuilder<HomeScreenBloc,
+                                                    HomeScreenState>(
+                                                  builder: (context, state) {
+                                                    return ChoiceChip(
+                                                      label: Text(
+                                                        meal[idx],
+                                                        style:
+                                                            TextStyleConstants
+                                                                .semiMedium,
+                                                      ),
+                                                      selected: state
+                                                          .isMealSelected[idx],
+                                                      onSelected: (bool value) {
+                                                        //New list
+                                                        List<bool> list =
+                                                            List.from(state
+                                                                .isMealSelected);
+                                                        list[idx] = value;
+                                                        //New ingredient
+                                                        String tempMeal = '';
+                                                        for (var i = 0;
+                                                            i < list.length;
+                                                            i++) {
+                                                          if (list[i] == true) {
+                                                            tempMeal +=
+                                                                '${meal[i]}, ';
+                                                          }
+                                                        }
+                                                        //
+                                                        context.read<HomeScreenBloc>().add(TapMealChip(
+                                                            isMealSelected:
+                                                                list,
+                                                            mealPrompt: PromptObject(
+                                                                cuisines: state
+                                                                    .prompt
+                                                                    .cuisines,
+                                                                dietaryRestrictions:
+                                                                    state.prompt
+                                                                        .dietaryRestrictions,
+                                                                ingredients: state
+                                                                    .prompt
+                                                                    .ingredients,
+                                                                meal:
+                                                                    tempMeal)));
+                                                      },
+                                                    );
+                                                  },
+                                                )),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const UISpace(height: 10),
+                                Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 10, top: 12, bottom: 8),
+                                        child: Container(
+                                            alignment: Alignment.topLeft,
                                             child: Text(
                                                 'I also have these staple ingredients:',
                                                 style:
@@ -549,6 +631,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 dietaryRestrictions:
                                                                     state.prompt
                                                                         .dietaryRestrictions,
+                                                                meal: state
+                                                                    .prompt
+                                                                    .meal,
                                                                 ingredients:
                                                                     tempIngredients)));
                                                       },
@@ -619,6 +704,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 dietaryRestrictions:
                                                                     state.prompt
                                                                         .dietaryRestrictions,
+                                                                meal: state
+                                                                    .prompt
+                                                                    .meal,
                                                                 cuisines:
                                                                     tempCuisines)));
                                                       },
@@ -693,6 +781,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 cuisines: state
                                                                     .prompt
                                                                     .cuisines,
+                                                                meal: state
+                                                                    .prompt
+                                                                    .meal,
                                                                 dietaryRestrictions:
                                                                     tempDietaryRestrictions)));
                                                       },
@@ -755,7 +846,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   bottom: 16,
                                                                   right: 12),
                                                           child: Text(
-                                                            "${state.prompt.prompt} \n\nOptionally include if these following additional information if these information related to recipe and: ${textEditingController.value.text}",
+                                                            "${state.prompt.prompt} \n\nAlso include these following information if these information related to food or ingredients: ${textEditingController.value.text}",
                                                             style:
                                                                 TextStyleConstants
                                                                     .normal,
@@ -856,10 +947,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         jsonMap);
                                                 imgData.resetData();
                                                 textEditingController.clear();
-
                                                 final res1 =
                                                     await getYoutubeResponse(
-                                                        response.title, 5);
+                                                        'How to make ${response.title}',
+                                                        5);
 
                                                 final YoutubeResponse
                                                     response1 =

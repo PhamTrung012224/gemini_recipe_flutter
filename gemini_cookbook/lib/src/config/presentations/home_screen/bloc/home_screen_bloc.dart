@@ -6,10 +6,10 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   HomeScreenBloc() : super(const HomeScreenState()) {
     on<TapFullPromptEvent>(_onTapFullPrompt);
     on<TapResetPromptEvent>(_onTapResetPrompt);
-    on<TapSubmitPromptEvent>(_onTapSubmitPrompt);
     on<TapCuisineChip>(_onTapCuisineChip);
     on<TapIngredientChip>(_onTapIngredientChip);
     on<TapDietaryRestrictionChip>(_onTapDietaryRestrictionChip);
+    on<TapMealChip>(_onTapMealChip);
   }
 
   // Chip
@@ -36,6 +36,13 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
         prompt: event.dietaryRestrictionPrompt));
   }
 
+  void _onTapMealChip(TapMealChip event, Emitter<HomeScreenState> emit) {
+    // Implement logic here
+    emit(state.copyWith(
+        isMealSelected: event.isMealSelected,
+        prompt: event.mealPrompt));
+  }
+
   // Prompt Button
   void _onTapFullPrompt(
       TapFullPromptEvent event, Emitter<HomeScreenState> emit) {
@@ -49,11 +56,8 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
         isIngredientsSelected: event.isIngredientsSelected,
         isDietaryRestrictionsSelected: event.isDietaryRestrictionSelected,
         isCuisinesSelected: event.isCuisineSelected,
+        isMealSelected: event.isMealSelected,
         prompt: event.promptObject));
   }
 
-  void _onTapSubmitPrompt(
-      TapSubmitPromptEvent event, Emitter<HomeScreenState> emit) {
-    // Implement logic here
-  }
 }

@@ -9,6 +9,7 @@ part of 'prompt_response_object.dart';
 PromptResponse _$PromptResponseFromJson(Map<String, dynamic> json) =>
     PromptResponse(
       title: json['title'] as String,
+      meal: json['meal'] as String,
       ingredients: (json['ingredients'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -30,6 +31,7 @@ PromptResponse _$PromptResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PromptResponseToJson(PromptResponse instance) =>
     <String, dynamic>{
       'title': instance.title,
+      'meal': instance.meal,
       'ingredients': instance.ingredients,
       'instructions': instance.instructions.map((e) => e.toJson()).toList(),
       'id': instance.id,

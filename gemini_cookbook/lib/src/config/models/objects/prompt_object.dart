@@ -4,19 +4,23 @@ class PromptObject extends Equatable {
   final String cuisines;
   final String dietaryRestrictions;
   final String ingredients;
+  final String meal;
   final String prompt;
 
   const PromptObject({
+    this.meal = '',
     this.cuisines = '',
     this.dietaryRestrictions = '',
     this.ingredients = '',
-  }) :
-        prompt = '''You are a Cat who's a chef that travels around the world a lot and your travel inspired recipe.
+  }) : prompt =
+            '''You are a Cat who's a chef that travels around the world a lot and your travel inspired recipe.
 
 Recommend a recipe for me based on the provided image.
 The recipe should only contain real, edible ingredients.
-If the image or images attached don't contain any food items, response using others information.
+If the image or images attached don't contain any food items or don't contain any images, generate recipe using other information.
 Adhere to food safety and handling best practices like ensuring that poultry is fully cooked.
+
+I want to make a recipe for $meal
 
 I'm in the mood for the following types of cuisine: $cuisines
 
@@ -36,9 +40,11 @@ If the prompt does not contain any food-related information, provide a recipe fr
 
 Note: ${PromptObject.formatting}''';
 
-  static const formatting = """Return the recipe in JSON using the following structure:
+  static const formatting =
+      """Return the recipe in JSON using the following structure:
 {
   'title': \$recipeTitle,
+  'meal': \$meal,
   'ingredients': \$ingredients,
   'instructions': [
      'stepTitle': \$stepTitle,
@@ -64,15 +70,16 @@ Note: ${PromptObject.formatting}''';
   }
 }
 
+meal should be one of these type: Breakfast, Brunch, Elevenses, Lunch, Tea, Supper, Dinner.
 calories should have unit kcal
 uniqueId should be unique and of type String.
-title, description, cuisine, allergens, and servings should be of String type.
+title, meal, description, cuisine, allergens, and servings should be of String type.
 ingredients, should be of type List<String>.
 calories, fat, saturatedFat, cholesterol, sodium, carbohydrates, fiber, sugar, protein,  stepTitle and detailInstructions  should be of String type
 
 The JSON results must have abbreviation for unit of measured""";
 
-
   @override
-  List<Object?> get props => [cuisines, dietaryRestrictions, ingredients,  prompt];
+  List<Object?> get props =>
+      [cuisines, dietaryRestrictions, ingredients, meal, prompt];
 }

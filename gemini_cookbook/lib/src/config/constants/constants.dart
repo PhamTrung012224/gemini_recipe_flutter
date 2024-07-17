@@ -80,7 +80,8 @@ class ImageConstants {
   static const String onBoardingBackground =
       'assets/images/onBoardingBackground.jpg';
   static const String loginBackground = 'assets/images/loginBackground1.jpg';
-  static const String loginDarkBackground = 'assets/images/loginBackground3.jpg';
+  static const String loginDarkBackground =
+      'assets/images/loginBackground3.jpg';
   static const String recipeBackground = 'assets/images/recipeBackground.jpg';
   static const String recipeDarkBackground =
       'assets/images/recipeDarkBackground.jpg';
@@ -101,6 +102,7 @@ class IconConstants {
   static const String upIcon = 'assets/icons/expand_circle_up.svg';
   static const String downIcon = 'assets/icons/expand_circle_down.svg';
   static const String youtubeIcon = 'assets/icons/youtube.svg';
+  static const String mealIcon = 'assets/icons/meal.svg';
 
   //Icon Data
   static const IconData iconPassword = Icons.lock_outline;
@@ -111,6 +113,11 @@ class IconConstants {
 }
 
 class Constants {
+  static const BorderRadius borderRadius = BorderRadius.only(
+      topLeft: Radius.circular(16),
+      topRight: Radius.circular(16),
+      bottomRight: Radius.circular(10),
+      bottomLeft: Radius.circular(10));
   static const List<String> extraBadWords = [
     'json',
     'result',

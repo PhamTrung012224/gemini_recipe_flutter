@@ -5,6 +5,7 @@ part 'prompt_response_object.g.dart';
 @JsonSerializable(explicitToJson: true)
 class PromptResponse {
   final String title;
+  final String meal;
   final List<String> ingredients;
   final List<Instructions> instructions;
   final String id;
@@ -19,6 +20,7 @@ class PromptResponse {
 
   PromptResponse({
     required this.title,
+    required this.meal,
     required this.ingredients,
     required this.instructions,
     required this.id,

@@ -16,6 +16,7 @@ class YoutubeSearchRepository {
       'videoDuration': 'medium',
       'type': 'video',
       'videoType': 'any',
+      'topicId': '/m/02wbm',
       'key': YoutubeSearchConstants.youtubeApiKey
     });
   }
