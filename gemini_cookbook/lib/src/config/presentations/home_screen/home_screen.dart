@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:choice/choice.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gemini_cookbook/src/config/components/ui_icon.dart';
@@ -191,37 +192,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .onSurface),
-                                      Container(
-                                        width: 42,
-                                        height: 42,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.transparent,
-                                        ),
-                                        child: BlocBuilder<MyUserBloc,
-                                            MyUserState>(
-                                          builder: (context, state) {
-                                            return (state.user?.picture
-                                                        .isNotEmpty ??
-                                                    false)
-                                                ? GestureDetector(
-                                                    onTap: () async {
-                                                      final image =
-                                                          await getProfileImage();
-                                                      if (image != null) {
-                                                        setState(() {
-                                                          context
-                                                              .read<
-                                                                  UpdateUserImageBloc>()
-                                                              .add(UpdateProfileImage(
-                                                                  userId: state
-                                                                      .user!
-                                                                      .userId,
-                                                                  path: image
-                                                                      .path));
-                                                        });
-                                                      }
-                                                    },
-                                                    child: ClipRRect(
+                                      BlocBuilder<MyUserBloc, MyUserState>(
+                                        builder: (context, state) {
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              final image =
+                                                  await getProfileImage();
+                                              if (image != null) {
+                                                setState(() {
+                                                  context
+                                                      .read<
+                                                          UpdateUserImageBloc>()
+                                                      .add(UpdateProfileImage(
+                                                          userId: state
+                                                              .user!.userId,
+                                                          path: image.path));
+                                                });
+                                              }
+                                            },
+                                            child: Container(
+                                              width: 42,
+                                              height: 42,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.transparent,
+                                              ),
+                                              child: (state.user?.picture
+                                                          .isNotEmpty ??
+                                                      false)
+                                                  ? ClipRRect(
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               50),
@@ -229,11 +227,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         state.user!.picture,
                                                         fit: BoxFit.cover,
                                                       ),
-                                                    ),
-                                                  )
-                                                : const SizedBox.shrink();
-                                          },
-                                        ),
+                                                    )
+                                                  : const SizedBox.shrink(),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
