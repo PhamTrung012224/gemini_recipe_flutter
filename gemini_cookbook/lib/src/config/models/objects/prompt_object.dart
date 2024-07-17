@@ -39,6 +39,8 @@ If the prompt does not contain any Cuisines, provide a recipe from a randomly se
 If the prompt does not contain any food-related information, provide a recipe from a randomly selected Asian cuisine.
 If the prompt contain food-related information in additional information, provide a recipe base on that food-related information.
 
+No Yapping!
+
 Note: ${PromptObject.formatting}''';
 
   static const formatting =
