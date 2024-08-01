@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
@@ -29,6 +30,11 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void didChangeDependencies() {
     isDarkMode = (Theme.of(context).brightness == Brightness.dark);
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Theme.of(context).colorScheme.background,
+      ),
+    );
     super.didChangeDependencies();
   }
 

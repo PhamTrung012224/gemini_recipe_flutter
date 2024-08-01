@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:user_repository/src/models/models.dart';
+
+import '../../user_repository.dart';
 
 abstract class UserRepository {
   Stream<User?> get user;
@@ -14,5 +15,15 @@ abstract class UserRepository {
 
   Future<MyUser> getUserData(String userId);
 
+  Future<MyUserRecipe> getUserRecipeData(String userRecipeId);
+
   Future<String> uploadPicture(String path, String userId);
+
+  Future<String> uploadRecipePicture(String path, String userId);
+
+  Future<void> setUserRecipeData(MyUserRecipe userRecipe);
+
+  Future<void> setSuggestRecipeData(MySuggestRecipe mySuggestRecipe);
+
+  Future<void> deleteUserRecipe(String userId, String recipeTitle);
 }

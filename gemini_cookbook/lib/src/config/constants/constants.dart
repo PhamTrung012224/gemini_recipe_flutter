@@ -55,7 +55,12 @@ class TextStyleConstants {
   static final TextStyle recipeContentBold = TextStyle(
       fontFamily: GoogleFonts.poppins().fontFamily,
       fontWeight: FontWeight.w600,
-      fontSize: 15);
+      fontSize: 12);
+
+  static final TextStyle stepTitle = TextStyle(
+      fontFamily: GoogleFonts.roboto().fontFamily,
+      fontWeight: FontWeight.w600,
+      fontSize: 18);
 
   static final TextStyle validText = TextStyle(
       color: const Color(0xFF20F42F),
@@ -74,6 +79,12 @@ class TextStyleConstants {
       fontFamily: GoogleFonts.poppins().fontFamily,
       fontWeight: FontWeight.w600,
       fontSize: 14);
+
+  static final TextStyle snackBarText = TextStyle(
+      fontFamily: GoogleFonts.roboto().fontFamily,
+      fontWeight: FontWeight.w500,
+      fontSize: 14,
+      color: const Color(0xFFD0BCFF));
 }
 
 class ImageConstants {
@@ -103,6 +114,9 @@ class IconConstants {
   static const String downIcon = 'assets/icons/expand_circle_down.svg';
   static const String youtubeIcon = 'assets/icons/youtube.svg';
   static const String mealIcon = 'assets/icons/meal.svg';
+  static const String unsavedRecipeIcon = 'assets/icons/unsavedRecipe.svg';
+  static const String savedRecipeIcon = 'assets/icons/savedRecipe.svg';
+  static const String recipeSavingScreenIcon = 'assets/icons/recipe.svg';
 
   //Icon Data
   static const IconData iconPassword = Icons.lock_outline;
@@ -112,12 +126,15 @@ class IconConstants {
   static const IconData iconShowPassword = Icons.visibility_off;
 }
 
+class LottieConstants {
+  static const String cookingAnimation = 'assets/lottie/cooking_animation.json';
+  static const String noRecipeAnimation =
+      'assets/lottie/noRecipe_animation.json';
+  static const String makeRecipeAnimation = 'assets/lottie/food_animation.json';
+}
+
 class Constants {
-  static const BorderRadius borderRadius = BorderRadius.only(
-      topLeft: Radius.circular(16),
-      topRight: Radius.circular(16),
-      bottomRight: Radius.circular(10),
-      bottomLeft: Radius.circular(10));
+  static const BorderRadius borderRadius = BorderRadius.all(Radius.circular(4));
   static const List<String> extraBadWords = [
     'json',
     'result',

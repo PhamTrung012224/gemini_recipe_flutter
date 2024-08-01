@@ -18,6 +18,13 @@ void main() async {
     projectId: 'recipe-with-gemini',
     storageBucket: 'recipe-with-gemini.appspot.com',
   ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
+  // make flutter draw behind navigation bar
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(MyApp(FirebaseUserRepository()));
 }
 

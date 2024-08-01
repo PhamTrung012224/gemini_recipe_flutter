@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:gemini_cookbook/src/config/models/objects/prompt_object.dart';
 
-class HomeScreenState extends Equatable {
+class ChooseScreenState extends Equatable {
   final PromptObject prompt;
   final List<bool> isCuisinesSelected;
   final List<bool> isDietaryRestrictionsSelected;
   final List<bool> isIngredientsSelected;
   final List<bool> isMealSelected;
 
-  const HomeScreenState({
+  const ChooseScreenState({
     this.prompt = const PromptObject(),
     this.isMealSelected = const [
       false,
@@ -54,14 +54,14 @@ class HomeScreenState extends Equatable {
     ],
   });
 
-  HomeScreenState copyWith(
+  ChooseScreenState copyWith(
       {PromptObject? prompt,
       bool? isButtonPressed,
       List<bool>? isCuisinesSelected,
       List<bool>? isDietaryRestrictionsSelected,
       List<bool>? isIngredientsSelected,
       List<bool>? isMealSelected}) {
-    return HomeScreenState(
+    return ChooseScreenState(
         prompt: prompt ?? this.prompt,
         isCuisinesSelected: isCuisinesSelected ?? this.isCuisinesSelected,
         isDietaryRestrictionsSelected:

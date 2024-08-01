@@ -41,20 +41,24 @@ class _SignInScreenState extends State<SignInScreen> {
         } else if (state is SignInFailure) {
           setState(() {
             signInRequired = false;
-            errorMessage = 'Invalid email or password';
-            showDialog<String>(
-                builder: (context) => Dialog(
-                      child: SingleChildScrollView(
-                          child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 12, top: 16, bottom: 16, right: 12),
-                        child: Text(
-                          errorMessage!,
-                          style: TextStyleConstants.medium,
-                        ),
-                      )),
-                    ),
-                context: context);
+            final snackBar = SnackBar(
+                backgroundColor: const Color(0xFF322F35),
+                padding: const EdgeInsets.only(left: 16, right: 8),
+                content: Container(
+                  alignment: Alignment.centerLeft,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                  child: Text(
+                    'Invalid email or password.',
+                    style: TextStyleConstants.snackBarText,
+                  ),
+                ),
+                elevation: 6,
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           });
         }
       },

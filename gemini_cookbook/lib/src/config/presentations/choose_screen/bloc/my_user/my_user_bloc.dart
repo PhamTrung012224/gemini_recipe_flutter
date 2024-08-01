@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/my_user/my_user_event.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/my_user/my_user_state.dart';
+import 'package:gemini_cookbook/src/config/presentations/choose_screen/bloc/my_user/my_user_event.dart';
+import 'package:gemini_cookbook/src/config/presentations/choose_screen/bloc/my_user/my_user_state.dart';
 import 'package:user_repository/user_repository.dart';
 
 class MyUserBloc extends Bloc<MyUserEvent, MyUserState> {

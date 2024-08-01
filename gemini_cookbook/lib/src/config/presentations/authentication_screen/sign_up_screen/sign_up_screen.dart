@@ -48,21 +48,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
             signUpRequired = true;
           });
         } else if (state is SignUpFailure) {
-          signUpRequired = false;
-          showDialog<String>(
-              builder: (context) => Dialog(
-                    child: SingleChildScrollView(
-                        child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12, top: 16, bottom: 16, right: 12),
-                      child: Text(
-                        state.errorMessage
-                            .replaceAll(RegExp(r'\[.*?\]\s?'), ''),
-                        style: TextStyleConstants.medium,
-                      ),
-                    )),
-                  ),
-              context: context);
+          setState(() {
+            signUpRequired = false;
+            final snackBar = SnackBar(
+              backgroundColor: const Color(0xFF322F35),
+              padding: const EdgeInsets.only(left: 16, right: 8),
+              content: Container(
+                alignment: Alignment.centerLeft,
+                height: 48,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                ),
+                child: Text(
+                  state.errorMessage.replaceAll(RegExp(r'\[.*?\]\s?'), ''),
+                  style: TextStyleConstants.snackBarText,
+                ),
+              ),
+              elevation: 6,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2)
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          });
         }
       },
       child: Form(

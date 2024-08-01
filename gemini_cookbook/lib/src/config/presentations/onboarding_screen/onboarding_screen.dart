@@ -5,17 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gemini_cookbook/src/config/components/gradient_text.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/authentication_bloc/authentication_bloc.dart';
-// ignore: unused_import
-import 'package:gemini_cookbook/src/config/presentations/authentication_screen/authentication_bloc/authentication_event.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/authentication_bloc/authentication_state.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/my_user/my_user_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/my_user/my_user_event.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/home_screen.dart';
+import 'package:gemini_cookbook/src/config/presentations/main_screen/main_screen.dart';
 import 'package:gemini_cookbook/src/config/themes/color_source.dart';
 import '../authentication_screen/login_screen.dart';
-import '../home_screen/bloc/my_user/update_user_image/update_user_image_bloc.dart';
+import '../choose_screen/bloc/choose_screen_bloc.dart';
+import '../choose_screen/bloc/my_user/my_user_bloc.dart';
+import '../choose_screen/bloc/my_user/my_user_event.dart';
+import '../choose_screen/bloc/my_user/update_user_image/update_user_image_bloc.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -64,19 +62,19 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SafeArea(
-          child: Scaffold(
-            body: Stack(children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(ImageConstants.onBoardingBackground),
-                    fit: BoxFit.cover,
-                  ),
+        Scaffold(
+          body: Stack(children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(ImageConstants.onBoardingBackground),
+                  fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(
+            ),
+            SafeArea(
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -112,9 +110,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                   ],
                 ),
-              )
-            ]),
-          ),
+              ),
+            )
+          ]),
         ),
         if (!showOnboarding)
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -132,8 +130,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         userRepository:
                             context.read<AuthenticationBloc>().userRepository),
                   ),
-                  BlocProvider<HomeScreenBloc>(
-                    create: (context) => HomeScreenBloc(),
+                  BlocProvider<ChooseScreenBloc>(
+                    create: (context) => ChooseScreenBloc(),
                   ),
                   BlocProvider<MyUserBloc>(
                       create: (context) => MyUserBloc(
@@ -144,9 +142,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 .read<AuthenticationBloc>()
                                 .state
                                 .user!
-                                .uid)))
+                                .uid))),
                 ],
-                child: const HomeScreen(),
+                child: MainScreen(
+                    userId: context.read<AuthenticationBloc>().state.user!.uid),
               );
             } else {
               return LoginScreen(

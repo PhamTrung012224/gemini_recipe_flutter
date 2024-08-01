@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_event.dart';
-import 'package:gemini_cookbook/src/config/presentations/home_screen/bloc/home_screen_state.dart';
+import 'package:gemini_cookbook/src/config/presentations/choose_screen/bloc/choose_screen_event.dart';
+import 'package:gemini_cookbook/src/config/presentations/choose_screen/bloc/choose_screen_state.dart';
 
-class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
-  HomeScreenBloc() : super(const HomeScreenState()) {
+class ChooseScreenBloc extends Bloc<ChooseScreenEvent, ChooseScreenState> {
+  ChooseScreenBloc() : super(const ChooseScreenState()) {
     on<TapFullPromptEvent>(_onTapFullPrompt);
     on<TapResetPromptEvent>(_onTapResetPrompt);
     on<TapCuisineChip>(_onTapCuisineChip);
@@ -13,7 +13,8 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   }
 
   // Chip
-  void _onTapCuisineChip(TapCuisineChip event, Emitter<HomeScreenState> emit) {
+  void _onTapCuisineChip(
+      TapCuisineChip event, Emitter<ChooseScreenState> emit) {
     // Implement logic here
     emit(state.copyWith(
         isCuisinesSelected: event.isCuisineSelected,
@@ -21,7 +22,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   }
 
   void _onTapIngredientChip(
-      TapIngredientChip event, Emitter<HomeScreenState> emit) {
+      TapIngredientChip event, Emitter<ChooseScreenState> emit) {
     // Implement logic here
     emit(state.copyWith(
         isIngredientsSelected: event.isIngredientsSelected,
@@ -29,28 +30,27 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   }
 
   void _onTapDietaryRestrictionChip(
-      TapDietaryRestrictionChip event, Emitter<HomeScreenState> emit) {
+      TapDietaryRestrictionChip event, Emitter<ChooseScreenState> emit) {
     // Implement logic here
     emit(state.copyWith(
         isDietaryRestrictionsSelected: event.isDietaryRestrictionSelected,
         prompt: event.dietaryRestrictionPrompt));
   }
 
-  void _onTapMealChip(TapMealChip event, Emitter<HomeScreenState> emit) {
+  void _onTapMealChip(TapMealChip event, Emitter<ChooseScreenState> emit) {
     // Implement logic here
     emit(state.copyWith(
-        isMealSelected: event.isMealSelected,
-        prompt: event.mealPrompt));
+        isMealSelected: event.isMealSelected, prompt: event.mealPrompt));
   }
 
   // Prompt Button
   void _onTapFullPrompt(
-      TapFullPromptEvent event, Emitter<HomeScreenState> emit) {
+      TapFullPromptEvent event, Emitter<ChooseScreenState> emit) {
     // Implement logic here
   }
 
   void _onTapResetPrompt(
-      TapResetPromptEvent event, Emitter<HomeScreenState> emit) {
+      TapResetPromptEvent event, Emitter<ChooseScreenState> emit) {
     // Implement logic here
     emit(state.copyWith(
         isIngredientsSelected: event.isIngredientsSelected,
@@ -59,5 +59,4 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
         isMealSelected: event.isMealSelected,
         prompt: event.promptObject));
   }
-
 }

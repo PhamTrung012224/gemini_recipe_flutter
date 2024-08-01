@@ -12,3 +12,12 @@ class UpdateProfileImage extends UpdateUserImageEvent {
   @override
   List<Object> get props => [userId, path];
 }
+
+class UpdateRecipeImage extends UpdateUserImageEvent {
+  final String path;
+  final String userId;
+  const UpdateRecipeImage({required this.userId, required this.path});
+
+  @override
+  List<Object> get props => [userId, path];
+}
