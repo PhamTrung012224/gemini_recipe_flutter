@@ -1,32 +1,27 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gemini_cookbook/src/config/models/objects/prompt_response_object.dart';
+import 'package:gemini_cookbook/src/config/components/suggest_list.dart';
+import 'package:gemini_cookbook/src/config/presentations/profile_screen/profile_screen.dart';
 
-import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:lottie/lottie.dart';
 
 import '../../components/gradient_text.dart';
 import '../../components/ui_icon.dart';
 import '../../components/ui_space.dart';
 import '../../constants/constants.dart';
-import '../../models/objects/suggest_response_object.dart';
-import '../../models/objects/youtube_response_object.dart';
 import '../../models/services/youtube_search/youtube_search.dart';
-import '../authentication_screen/authentication_bloc/authentication_bloc.dart';
 import '../authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
 import '../authentication_screen/sign_in_screen/bloc/sign_in_event.dart';
-import '../choose_screen/bloc/my_user/my_user_bloc.dart';
-import '../choose_screen/bloc/my_user/my_user_event.dart';
-import '../choose_screen/bloc/my_user/my_user_state.dart';
-import '../choose_screen/bloc/my_user/update_user_image/update_user_image_bloc.dart';
-import '../choose_screen/bloc/my_user/update_user_image/update_user_image_event.dart';
-import '../choose_screen/bloc/my_user/update_user_image/update_user_image_state.dart';
-import '../recipe_screen/recipe_screen.dart';
-import '../recipe_screen/save_recipe_bloc/save_recipe_bloc.dart';
+import '../main_screen/my_user/my_user_bloc.dart';
+import '../main_screen/my_user/my_user_event.dart';
+import '../main_screen/my_user/my_user_state.dart';
+import '../main_screen/my_user/update_user_image/update_user_profile_bloc.dart';
+import '../main_screen/my_user/update_user_image/update_user_profile_state.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -41,27 +36,27 @@ class _HomeScreenState extends State<HomeScreen>
   NavigatorState? _navigator;
   BuildContext? _context;
   bool isDarkMode = false;
-  bool _isLoadingRecipe = false;
   bool _isLoadingLogOut = false;
   final YoutubeSearchRepository youtube = YoutubeSearchRepository();
   final suggestCollection =
       FirebaseFirestore.instance.collection('suggest_recipes');
   final recipeCollection = FirebaseFirestore.instance.collection('recipes');
+  final categoryCollection = FirebaseFirestore.instance.collection('category');
 
   @override
   void didChangeDependencies() {
     isDarkMode = (Theme.of(context).brightness == Brightness.dark);
     _navigator = Navigator.of(context);
-    _context=context;
+    _context = context;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocListener<UpdateUserImageBloc, UpdateUserImageState>(
+    return BlocListener<UpdateUserProfileBloc, UpdateUserProfileState>(
       listener: (context, state) {
-        if (state is UploadPictureSuccess) {
+        if (state is UploadPictureSuccess || state is UploadUsernameSuccess) {
           setState(() {
             context.read<MyUserBloc>().add(GetUserData(
                 userId: context.read<MyUserBloc>().state.user!.userId));
@@ -131,18 +126,9 @@ class _HomeScreenState extends State<HomeScreen>
                                       builder: (context, state) {
                                         return GestureDetector(
                                           onTap: () async {
-                                            final image =
-                                                await getProfileImage();
-                                            if (image != null) {
-                                              setState(() {
-                                                context
-                                                    .read<UpdateUserImageBloc>()
-                                                    .add(UpdateProfileImage(
-                                                        userId:
-                                                            state.user!.userId,
-                                                        path: image.path));
-                                              });
-                                            }
+                                            _navigator!.push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ProfileScreen()));
                                           },
                                           child: Container(
                                             width: 42,
@@ -157,8 +143,9 @@ class _HomeScreenState extends State<HomeScreen>
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             50),
-                                                    child: Image.network(
-                                                      state.user!.picture,
+                                                    child: CachedNetworkImage(
+                                                      imageUrl:
+                                                          state.user!.picture,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   )
@@ -196,8 +183,8 @@ class _HomeScreenState extends State<HomeScreen>
                                           .catchError((error) {
                                         log('Error preloading image: $error');
                                       });
-                                      _context
-                                          !.read<SignInBloc>()
+                                      _context!
+                                          .read<SignInBloc>()
                                           .add(SignOutRequired());
                                       setState(() {
                                         _isLoadingLogOut = false;
@@ -265,919 +252,37 @@ class _HomeScreenState extends State<HomeScreen>
                   padding: const EdgeInsets.only(
                       left: 16, right: 16, top: 8, bottom: 8),
                   child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection("suggest_recipes")
-                        .snapshots(),
+                    stream: categoryCollection.snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.active &&
                           (snapshot.data?.docs.length ?? 0) >= 1) {
                         final result = snapshot.data!.docs.toList();
 
-                        List<String> breakfastUserId = [];
-                        List<String> lunchUserId = [];
-                        List<String> dinnerUserId = [];
-                        List<String> dessertUserId = [];
-                        List<String> vegetarianUserId = [];
-                        List<String> soupUserId = [];
-                        List<String> saladUserId = [];
+                        final categories = [];
 
-                        List<String> breakfastImage = [];
-                        List<String> lunchImage = [];
-                        List<String> dinnerImage = [];
-                        List<String> dessertImage = [];
-                        List<String> vegetarianImage = [];
-                        List<String> soupImage = [];
-                        List<String> saladImage = [];
-
-                        List<SuggestResponse> breakfastResponse = [];
-                        List<SuggestResponse> lunchResponse = [];
-                        List<SuggestResponse> dinnerResponse = [];
-                        List<SuggestResponse> dessertResponse = [];
-                        List<SuggestResponse> saladResponse = [];
-                        List<SuggestResponse> soupResponse = [];
-                        List<SuggestResponse> vegetarianResponse = [];
-
-                        for (var recipe in result) {
-                          switch (SuggestResponse.fromJson(recipe["recipeJson"])
-                              .category) {
-                            case 'Breakfast recipes':
-                              {
-                                breakfastUserId.add(recipe["userId"]);
-                                breakfastImage.add(recipe["picture"]);
-                                breakfastResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            case 'Lunch recipes':
-                              {
-                                lunchUserId.add(recipe["userId"]);
-                                lunchImage.add(recipe["picture"]);
-                                lunchResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            case 'Dinner recipes':
-                              {
-                                dinnerUserId.add(recipe["userId"]);
-                                dinnerImage.add(recipe["picture"]);
-                                dinnerResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            case 'Salad recipes':
-                              {
-                                saladUserId.add(recipe["userId"]);
-                                saladImage.add(recipe["picture"]);
-                                saladResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            case 'Soup recipes':
-                              {
-                                soupUserId.add(recipe["userId"]);
-                                soupImage.add(recipe["picture"]);
-                                soupResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            case 'Dessert recipes':
-                              {
-                                dessertUserId.add(recipe["userId"]);
-                                dessertImage.add(recipe["picture"]);
-                                dessertResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            case 'Vegetarian Dishes':
-                              {
-                                vegetarianUserId.add(recipe["userId"]);
-                                vegetarianImage.add(recipe["picture"]);
-                                vegetarianResponse.add(SuggestResponse.fromJson(
-                                    recipe["recipeJson"]));
-                              }
-                            default:
-                          }
+                        // Get list of category
+                        for (var category in result) {
+                          categories.add(category["name"]);
                         }
-                        return BlocBuilder<MyUserBloc, MyUserState>(
-                          builder: (context, userState) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Text(
-                                    'For Breakfast:',
-                                    style: TextStyleConstants.title,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: breakfastResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${breakfastResponse[idx].title}',
-                                            5);
 
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                breakfastResponse[idx]
-                                                    .toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where('ownerId',
-                                                    isEqualTo:
-                                                        userState.user!.userId)
-                                                .where('title',
-                                                    isEqualTo:
-                                                        breakfastResponse[idx]
-                                                            .title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          breakfastImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    breakfastImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                breakfastResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Text('For Lunch:',
-                                      style: TextStyleConstants.title),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: lunchResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${lunchResponse[idx].title}',
-                                            5);
-
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                lunchResponse[idx].toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where(
-                                                    'ownerId',
-                                                    isEqualTo: userState
-                                                        .user!.userId)
-                                                .where(
-                                                    'title',
-                                                    isEqualTo:
-                                                        lunchResponse[idx]
-                                                            .title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          lunchImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    lunchImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                lunchResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Text('For Dinner:',
-                                      style: TextStyleConstants.title),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: dinnerResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${dinnerResponse[idx].title}',
-                                            5);
-
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                dinnerResponse[idx].toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where('ownerId',
-                                                    isEqualTo:
-                                                        userState.user!.userId)
-                                                .where('title',
-                                                    isEqualTo:
-                                                        dinnerResponse[idx]
-                                                            .title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          dinnerImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    dinnerImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                dinnerResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Text('Dessert Dishes:',
-                                      style: TextStyleConstants.title),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: dessertResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${dessertResponse[idx].title}',
-                                            5);
-
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                dessertResponse[idx].toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where('ownerId',
-                                                    isEqualTo:
-                                                        userState.user!.userId)
-                                                .where('title',
-                                                    isEqualTo:
-                                                        dessertResponse[idx]
-                                                            .title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          dessertImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    dessertImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                dessertResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Text('Vegetarian Dishes:',
-                                      style: TextStyleConstants.title),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: vegetarianResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${vegetarianResponse[idx].title}',
-                                            5);
-
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                vegetarianResponse[idx]
-                                                    .toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where('ownerId',
-                                                    isEqualTo:
-                                                        userState.user!.userId)
-                                                .where('title',
-                                                    isEqualTo:
-                                                        vegetarianResponse[idx]
-                                                            .title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          vegetarianImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    vegetarianImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                vegetarianResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                                Padding(
-                                    padding: const EdgeInsets.only(bottom: 4.0),
-                                    child: Text('Soup Dishes:',
-                                        style: TextStyleConstants.title)),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: soupResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${soupResponse[idx].title}',
-                                            5);
-
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                soupResponse[idx].toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where('ownerId',
-                                                    isEqualTo:
-                                                        userState.user!.userId)
-                                                .where('title',
-                                                    isEqualTo:
-                                                        soupResponse[idx].title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          soupImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    soupImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                soupResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Text('Salad Dishes:',
-                                      style: TextStyleConstants.title),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: saladResponse.length,
-                                    itemBuilder: (context, idx) =>
-                                        GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          _isLoadingRecipe = true;
-                                        });
-                                        final res = await getYoutubeResponse(
-                                            'How to make ${saladResponse[idx].title}',
-                                            5);
-
-                                        final PromptResponse promptResponse =
-                                            PromptResponse.fromJson(
-                                                saladResponse[idx].toJson());
-
-                                        final YoutubeResponse youtubeResponse =
-                                            YoutubeResponse.fromJson(res);
-
-                                        final savedCheck =
-                                            await recipeCollection
-                                                .where(
-                                                    'ownerId',
-                                                    isEqualTo: userState
-                                                        .user!.userId)
-                                                .where(
-                                                    'title',
-                                                    isEqualTo:
-                                                        saladResponse[idx]
-                                                            .title)
-                                                .get();
-
-                                        setState(() {
-                                          _isLoadingRecipe = false;
-                                        });
-
-                                        _navigator!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) => BlocProvider(
-                                              create: (context) => SaveRecipeBloc(
-                                                  userRepository: context
-                                                      .read<
-                                                          AuthenticationBloc>()
-                                                      .userRepository),
-                                              child: RecipeScreen(
-                                                userId: userState.user!.userId,
-                                                promptResponse: promptResponse,
-                                                youtubeResponse:
-                                                    youtubeResponse,
-                                                savedCheck: savedCheck.size >= 1
-                                                    ? true
-                                                    : false,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8))),
-                                        child: Column(children: [
-                                          saladImage[idx].isEmpty
-                                              ? const SizedBox.shrink()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(8)),
-                                                  child: Image.network(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.5,
-                                                    saladImage[idx],
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                saladResponse[idx].title,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyleConstants
-                                                    .headline2,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const UISpace(height: 16),
-                              ],
-                            );
-                          },
+                        return Column(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 32,
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: categories.length,
+                                  itemBuilder: (context, idx) {
+                                    return SuggestList(
+                                      title: categories[idx],
+                                      category: categories[idx],
+                                      recipeCollection: recipeCollection,
+                                    );
+                                  }),
+                            ),
+                            const UISpace(height: 20)
+                          ],
                         );
                       } else {
                         return const SizedBox.shrink();
@@ -1193,25 +298,10 @@ class _HomeScreenState extends State<HomeScreen>
                   child: LoadingAnimationWidget.staggeredDotsWave(
                       color: Theme.of(context).colorScheme.primary, size: 90),
                 )
-              : (_isLoadingRecipe == true
-                  ? Container(
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey.withOpacity(0.4),
-                      child: Center(
-                        child: Lottie.asset(LottieConstants.cookingAnimation,
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            height: MediaQuery.of(context).size.width * 0.4),
-                      ),
-                    )
-                  : const SizedBox())
+              : const SizedBox()
         ],
       ),
     );
-  }
-
-  Future<XFile?> getProfileImage() async {
-    ImagePicker imagePicker = ImagePicker();
-    return await imagePicker.pickImage(source: ImageSource.gallery);
   }
 
   Future<Map<String, dynamic>> getYoutubeResponse(
@@ -1227,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _navigator = null;
-    _context=null;
+    _context = null;
     super.dispose();
   }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:choice/choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -26,15 +27,16 @@ import 'package:safe_text/safe_text.dart';
 
 import '../../components/gradient_text.dart';
 import '../../themes/color_source.dart';
+import '../main_screen/my_user/my_user_event.dart';
+import '../main_screen/my_user/update_user_image/update_user_profile_bloc.dart';
+import '../main_screen/my_user/update_user_image/update_user_profile_state.dart';
+import '../profile_screen/profile_screen.dart';
 import 'bloc/choose_screen_bloc.dart';
 import 'bloc/choose_screen_event.dart';
 import 'bloc/choose_screen_state.dart';
-import 'bloc/my_user/my_user_bloc.dart';
-import 'bloc/my_user/my_user_event.dart';
-import 'bloc/my_user/my_user_state.dart';
-import 'bloc/my_user/update_user_image/update_user_image_bloc.dart';
-import 'bloc/my_user/update_user_image/update_user_image_event.dart';
-import 'bloc/my_user/update_user_image/update_user_image_state.dart';
+import '../main_screen/my_user/my_user_bloc.dart';
+import '../main_screen/my_user/my_user_state.dart';
+
 
 const String _apiKey = String.fromEnvironment('API_KEY');
 
@@ -45,6 +47,8 @@ class ChooseScreen extends StatefulWidget {
 }
 
 class _ChooseScreenState extends State<ChooseScreen> {
+  BuildContext? _context;
+
   int currentStep = 0;
   bool get isFirstStep => currentStep == 0;
   bool get isLastStep => currentStep == steps().length - 1;
@@ -97,14 +101,19 @@ class _ChooseScreenState extends State<ChooseScreen> {
   late final FocusNode textFieldFocus;
   final YoutubeSearchRepository youtube = YoutubeSearchRepository();
   final recipeCollection = FirebaseFirestore.instance.collection('recipes');
+  late String? imageUrl;
+  late String userName;
   bool _isLoadingRecipe = false;
   bool isDarkMode = false;
 
   List<Step> steps() => [
         Step(
-          state: currentStep>0?StepState.complete:StepState.indexed,
+          state: currentStep > 0 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
-          title: Text("Let's Talk About Ingredients!",style: TextStyleConstants.stepTitle,),
+          title: Text(
+            "Let's Talk About Ingredients!",
+            style: TextStyleConstants.stepTitle,
+          ),
           content:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Container(
@@ -292,9 +301,10 @@ class _ChooseScreenState extends State<ChooseScreen> {
           ]),
         ),
         Step(
-          state: currentStep>1?StepState.complete:StepState.indexed,
+          state: currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 1,
-          title: Text('What kind of cuisines are you craving?',style: TextStyleConstants.stepTitle),
+          title: Text('What kind of cuisines are you craving?',
+              style: TextStyleConstants.stepTitle),
           content: Container(
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
@@ -346,9 +356,10 @@ class _ChooseScreenState extends State<ChooseScreen> {
           ),
         ),
         Step(
-          state: currentStep>2?StepState.complete:StepState.indexed,
+          state: currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 2,
-          title: Text('What are we cooking today?',style: TextStyleConstants.stepTitle),
+          title: Text('What are we cooking today?',
+              style: TextStyleConstants.stepTitle),
           content: Container(
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
@@ -403,9 +414,10 @@ class _ChooseScreenState extends State<ChooseScreen> {
           ),
         ),
         Step(
-          state: currentStep>3?StepState.complete:StepState.indexed,
+          state: currentStep > 3 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 3,
-          title: Text('Any allergies or dietary needs I know about?',style: TextStyleConstants.stepTitle),
+          title: Text('Any allergies or dietary needs I know about?',
+              style: TextStyleConstants.stepTitle),
           content: Container(
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
@@ -459,10 +471,11 @@ class _ChooseScreenState extends State<ChooseScreen> {
           ),
         ),
         Step(
-            state: currentStep>4?StepState.complete:StepState.indexed,
+            state: currentStep > 4 ? StepState.complete : StepState.indexed,
             isActive: currentStep >= 4,
             title: Text(
-                "Anything else you'd like to add? (ingredients, desired dish, etc.)",style: TextStyleConstants.stepTitle),
+                "Anything else you'd like to add? (ingredients, desired dish, etc.)",
+                style: TextStyleConstants.stepTitle),
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -493,9 +506,10 @@ class _ChooseScreenState extends State<ChooseScreen> {
               ],
             )),
         Step(
-            state: currentStep>5?StepState.complete:StepState.indexed,
+            state: currentStep > 5 ? StepState.complete : StepState.indexed,
             isActive: currentStep >= 5,
-            title: Text("Let's Find Your Perfect Recipe!",style: TextStyleConstants.stepTitle),
+            title: Text("Let's Find Your Perfect Recipe!",
+                style: TextStyleConstants.stepTitle),
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -607,7 +621,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                     final YoutubeResponse response1 =
                                         YoutubeResponse.fromJson(res1);
 
-                                    context
+                                    _context!
                                         .read<ChooseScreenBloc>()
                                         .add(TapResetPromptEvent());
                                     currentStep = 0;
@@ -621,7 +635,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                     setState(() {
                                       _isLoadingRecipe = false;
                                     });
-                                    Navigator.of(context).push(
+                                    Navigator.of(_context!).push(
                                       MaterialPageRoute(
                                         builder: (context) => BlocProvider(
                                           create: (context) => SaveRecipeBloc(
@@ -641,7 +655,8 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                     );
                                   } on HttpException {
                                     // Handle network-related exceptions
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    ScaffoldMessenger.of(_context!)
+                                        .showSnackBar(
                                       SnackBar(
                                         backgroundColor: Colors.blueGrey,
                                         content: Text(
@@ -656,7 +671,8 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                   } catch (e) {
                                     // Handle any other exceptions that weren't caught by the specific catches
                                     log(e.toString());
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    ScaffoldMessenger.of(_context!)
+                                        .showSnackBar(
                                       SnackBar(
                                         backgroundColor: Colors.blueGrey,
                                         content: Text(
@@ -754,7 +770,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
         SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.high),
         SafetySetting(HarmCategory.sexuallyExplicit, HarmBlockThreshold.high)
       ],
-      model: 'gemini-1.5-flash',
+      model: "gemini-1.5-flash",
       apiKey: _apiKey,
     );
     textEditingController = TextEditingController();
@@ -765,6 +781,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
   @override
   void didChangeDependencies() {
     isDarkMode = (Theme.of(context).brightness == Brightness.dark);
+    _context = context;
     //Load background of Recipe Screen
     preloadImages();
     super.didChangeDependencies();
@@ -783,9 +800,9 @@ class _ChooseScreenState extends State<ChooseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UpdateUserImageBloc, UpdateUserImageState>(
+    return BlocListener<UpdateUserProfileBloc, UpdateUserProfileState>(
       listener: (context, state) {
-        if (state is UploadPictureSuccess) {
+        if (state is UploadPictureSuccess || state is UploadUsernameSuccess) {
           setState(() {
             context.read<MyUserBloc>().add(GetUserData(
                 userId: context.read<MyUserBloc>().state.user!.userId));
@@ -837,6 +854,8 @@ class _ChooseScreenState extends State<ChooseScreen> {
                     ),
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     expandedHeight: MediaQuery.of(context).size.height * 0.28,
+                    stretchTriggerOffset:
+                        MediaQuery.of(context).size.height * 0.28,
                     flexibleSpace: FlexibleSpaceBar(
                       background: Stack(
                         children: [
@@ -889,19 +908,10 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                         builder: (context, state) {
                                           return GestureDetector(
                                             onTap: () async {
-                                              final image =
-                                                  await getProfileImage();
-                                              if (image != null) {
-                                                setState(() {
-                                                  context
-                                                      .read<
-                                                          UpdateUserImageBloc>()
-                                                      .add(UpdateProfileImage(
-                                                          userId: state
-                                                              .user!.userId,
-                                                          path: image.path));
-                                                });
-                                              }
+                                              Navigator.of(_context!).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const ProfileScreen()));
                                             },
                                             child: Container(
                                               width: 42,
@@ -916,8 +926,9 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               50),
-                                                      child: Image.network(
-                                                        state.user!.picture,
+                                                      child: CachedNetworkImage(
+                                                        imageUrl:
+                                                            state.user!.picture,
                                                         fit: BoxFit.cover,
                                                       ),
                                                     )
@@ -1057,22 +1068,22 @@ class _ChooseScreenState extends State<ChooseScreen> {
                             );
                           }),
                     ),
-                  )
+                  ),
                 ],
               )),
             ),
           ),
           _isLoadingRecipe == true
-                  ? Container(
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey.withOpacity(0.4),
-                      child: Center(
-                        child: Lottie.asset(LottieConstants.cookingAnimation,
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            height: MediaQuery.of(context).size.width * 0.4),
-                      ),
-                    )
-                  : const SizedBox()
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.grey.withOpacity(0.4),
+                  child: Center(
+                    child: Lottie.asset(LottieConstants.cookingAnimation,
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        height: MediaQuery.of(context).size.width * 0.4),
+                  ),
+                )
+              : const SizedBox()
         ],
       ),
     );
@@ -1115,5 +1126,11 @@ class _ChooseScreenState extends State<ChooseScreen> {
       log(e.toString());
       rethrow;
     }
+  }
+
+  @override
+  void dispose() {
+    _context = null;
+    super.dispose();
   }
 }

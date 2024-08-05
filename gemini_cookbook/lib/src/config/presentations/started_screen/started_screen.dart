@@ -5,25 +5,32 @@ import 'package:lottie/lottie.dart';
 
 import '../../components/gradient_text.dart';
 import '../../constants/constants.dart';
-import '../authentication_screen/authentication_bloc/authentication_bloc.dart';
-import '../authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
 import '../choose_screen/bloc/choose_screen_bloc.dart';
-import '../choose_screen/bloc/my_user/my_user_bloc.dart';
-import '../choose_screen/bloc/my_user/my_user_event.dart';
-import '../choose_screen/bloc/my_user/update_user_image/update_user_image_bloc.dart';
 import '../choose_screen/choose_screen.dart';
 
 class GenerateRecipeScreen extends StatefulWidget {
-  const GenerateRecipeScreen({super.key});
+  final String imageUrl;
+  final String userName;
+  const GenerateRecipeScreen(
+      {super.key, required this.userName, required this.imageUrl});
 
   @override
   State<GenerateRecipeScreen> createState() => _GenerateRecipeScreenState();
 }
 
 class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
+  late String userName;
+  late String imageUrl;
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    userName = widget.userName;
+    imageUrl = widget.imageUrl;
+    super.didChangeDependencies();
   }
 
   @override
@@ -54,45 +61,23 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
                 height: MediaQuery.of(context).size.height * 0.5,
               ),
               ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      maximumSize:
+                          Size(MediaQuery.of(context).size.width * 0.55, 48),
+                      minimumSize:
+                          Size(MediaQuery.of(context).size.width * 0.55, 48),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)))),
                   onPressed: () {
-                    setState(() {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MultiBlocProvider(
-                                providers: [
-                                  BlocProvider<SignInBloc>(
-                                    create: (context) => SignInBloc(
-                                        userRepository: context
-                                            .read<AuthenticationBloc>()
-                                            .userRepository),
-                                  ),
-                                  BlocProvider<UpdateUserImageBloc>(
-                                    create: (context) => UpdateUserImageBloc(
-                                        userRepository: context
-                                            .read<AuthenticationBloc>()
-                                            .userRepository),
-                                  ),
-                                  BlocProvider<ChooseScreenBloc>(
-                                    create: (context) => ChooseScreenBloc(),
-                                  ),
-                                  BlocProvider<MyUserBloc>(
-                                      create: (context) => MyUserBloc(
-                                          userRepository: context
-                                              .read<AuthenticationBloc>()
-                                              .userRepository)
-                                        ..add(GetUserData(
-                                            userId: context
-                                                .read<AuthenticationBloc>()
-                                                .state
-                                                .user!
-                                                .uid))),
-                                ],
-                                child: const ChooseScreen(),
-                              )));
-                    });
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                              create: (context) => ChooseScreenBloc(),
+                              child: const ChooseScreen(),
+                            )));
                   },
                   child: Text(
                     "Get Started",
-                    style: TextStyleConstants.headline1,
+                    style: TextStyleConstants.title,
                   )),
             ],
           )),

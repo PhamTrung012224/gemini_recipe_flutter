@@ -110,6 +110,8 @@ class IconConstants {
   static const String servingsIcon = 'assets/icons/servings.svg';
   static const String logoutIcon = 'assets/icons/logout.svg';
   static const String accountIcon = 'assets/icons/account.svg';
+  static const String accountBoxIcon = 'assets/icons/account_box.svg';
+  static const String usernameIcon = 'assets/icons/username.svg';
   static const String upIcon = 'assets/icons/expand_circle_up.svg';
   static const String downIcon = 'assets/icons/expand_circle_down.svg';
   static const String youtubeIcon = 'assets/icons/youtube.svg';
@@ -117,6 +119,7 @@ class IconConstants {
   static const String unsavedRecipeIcon = 'assets/icons/unsavedRecipe.svg';
   static const String savedRecipeIcon = 'assets/icons/savedRecipe.svg';
   static const String recipeSavingScreenIcon = 'assets/icons/recipe.svg';
+  static const String themeIcon = 'assets/icons/theme.svg';
 
   //Icon Data
   static const IconData iconPassword = Icons.lock_outline;

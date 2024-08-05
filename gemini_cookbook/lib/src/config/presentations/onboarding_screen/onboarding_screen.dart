@@ -6,14 +6,10 @@ import 'package:gemini_cookbook/src/config/components/gradient_text.dart';
 import 'package:gemini_cookbook/src/config/constants/constants.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/authentication_bloc/authentication_bloc.dart';
 import 'package:gemini_cookbook/src/config/presentations/authentication_screen/authentication_bloc/authentication_state.dart';
-import 'package:gemini_cookbook/src/config/presentations/authentication_screen/sign_in_screen/bloc/sign_in_bloc.dart';
 import 'package:gemini_cookbook/src/config/presentations/main_screen/main_screen.dart';
 import 'package:gemini_cookbook/src/config/themes/color_source.dart';
 import '../authentication_screen/login_screen.dart';
 import '../choose_screen/bloc/choose_screen_bloc.dart';
-import '../choose_screen/bloc/my_user/my_user_bloc.dart';
-import '../choose_screen/bloc/my_user/my_user_event.dart';
-import '../choose_screen/bloc/my_user/update_user_image/update_user_image_bloc.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -24,6 +20,7 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   bool showOnboarding = true;
+  BuildContext? _context;
 
   @override
   void initState() {
@@ -40,19 +37,20 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   didChangeDependencies() {
+    _context = context;
     preloadImages();
     super.didChangeDependencies();
   }
 
   Future<void> preloadImages() async {
     await precacheImage(
-            const AssetImage(ImageConstants.loginBackground), context)
+            const AssetImage(ImageConstants.loginBackground), _context!)
         .catchError((error) {
       log('Error preloading image: $error');
     });
 
     await precacheImage(
-            const AssetImage(ImageConstants.loginDarkBackground), context)
+            const AssetImage(ImageConstants.loginDarkBackground), _context!)
         .catchError((error) {
       log('Error preloading image: $error');
     });
@@ -118,34 +116,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
               builder: (context, state) {
             if (state.status == AuthenticationStatus.authenticated) {
-              return MultiBlocProvider(
-                providers: [
-                  BlocProvider<SignInBloc>(
-                    create: (context) => SignInBloc(
-                        userRepository:
-                            context.read<AuthenticationBloc>().userRepository),
-                  ),
-                  BlocProvider<UpdateUserImageBloc>(
-                    create: (context) => UpdateUserImageBloc(
-                        userRepository:
-                            context.read<AuthenticationBloc>().userRepository),
-                  ),
-                  BlocProvider<ChooseScreenBloc>(
-                    create: (context) => ChooseScreenBloc(),
-                  ),
-                  BlocProvider<MyUserBloc>(
-                      create: (context) => MyUserBloc(
-                          userRepository:
-                              context.read<AuthenticationBloc>().userRepository)
-                        ..add(GetUserData(
-                            userId: context
-                                .read<AuthenticationBloc>()
-                                .state
-                                .user!
-                                .uid))),
-                ],
+              return BlocProvider<ChooseScreenBloc>(
+                create: (context) => ChooseScreenBloc(),
                 child: MainScreen(
-                    userId: context.read<AuthenticationBloc>().state.user!.uid),
+                  userId: context.read<AuthenticationBloc>().state.user!.uid,
+                ),
               );
             } else {
               return LoginScreen(
@@ -155,5 +130,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           })
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _context = null;
+    super.dispose();
   }
 }

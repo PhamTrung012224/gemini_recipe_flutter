@@ -51,23 +51,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
           setState(() {
             signUpRequired = false;
             final snackBar = SnackBar(
-              backgroundColor: const Color(0xFF322F35),
-              padding: const EdgeInsets.only(left: 16, right: 8),
-              content: Container(
-                alignment: Alignment.centerLeft,
-                height: 48,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                backgroundColor: const Color(0xFF322F35),
+                padding: const EdgeInsets.only(left: 16, right: 8),
+                content: Container(
+                  alignment: Alignment.centerLeft,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                  child: Text(
+                    state.errorMessage.replaceAll(RegExp(r'\[.*?\]\s?'), ''),
+                    style: TextStyleConstants.snackBarText,
+                  ),
                 ),
-                child: Text(
-                  state.errorMessage.replaceAll(RegExp(r'\[.*?\]\s?'), ''),
-                  style: TextStyleConstants.snackBarText,
-                ),
-              ),
-              elevation: 6,
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2)
-            );
+                elevation: 6,
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           });
         }
@@ -235,7 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const UISpace(height: 10),
               CustomTextField(
                 width: MediaQuery.of(context).size.width,
-                text: 'Name',
+                text: 'Username',
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontFamily: GoogleFonts.poppins().fontFamily,

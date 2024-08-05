@@ -19,18 +19,21 @@ class SaveRecipeBloc extends Bloc<SaveRecipeEvent, SaveRecipeState> {
         rethrow;
       }
     });
-    on<SaveSuggestRecipeRequired>((event, emit) async {
-      emit(SavingProcess());
-      try {
-        await _userRepository.setSuggestRecipeData(event.mySuggestRecipe);
-        emit(SavingSuccess());
-      } catch (e) {
-        emit(SavingFailure(error: e.toString()));
-        rethrow;
-      }
-    });
+
     on<RemoveRecipeRequired>((event, emit) {
       _userRepository.deleteUserRecipe(event.userId,event.recipeTitle);
     });
   }
 }
+
+
+// on<SaveSuggestRecipeRequired>((event, emit) async {
+//   emit(SavingProcess());
+//   try {
+//     await _userRepository.setSuggestRecipeData(event.mySuggestRecipe);
+//     emit(SavingSuccess());
+//   } catch (e) {
+//     emit(SavingFailure(error: e.toString()));
+//     rethrow;
+//   }
+// });

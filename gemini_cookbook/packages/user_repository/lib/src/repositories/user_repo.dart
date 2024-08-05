@@ -19,11 +19,13 @@ abstract class UserRepository {
 
   Future<String> uploadPicture(String path, String userId);
 
-  Future<String> uploadRecipePicture(String path, String userId);
-
   Future<void> setUserRecipeData(MyUserRecipe userRecipe);
 
-  Future<void> setSuggestRecipeData(MySuggestRecipe mySuggestRecipe);
-
   Future<void> deleteUserRecipe(String userId, String recipeTitle);
+
+  Future<void> editUsername(String userId, String newUsername);
+
+
+// Future<String> uploadRecipePicture(String path, String userId);
+// Future<void> setSuggestRecipeData(MySuggestRecipe mySuggestRecipe);
 }

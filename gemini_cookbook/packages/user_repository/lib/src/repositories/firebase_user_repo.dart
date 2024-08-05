@@ -86,22 +86,21 @@ class FirebaseUserRepository implements UserRepository {
     }
   }
 
-  @override
-  Future<String> uploadRecipePicture(String path, String userId) async {
-    try {
-      File imageFile = File(path);
-      Reference firebaseStoreRef =
-      FirebaseStorage.instance.ref().child('$userId/PP/${userId}_lead');
-      await firebaseStoreRef.putFile(imageFile);
-      String url = await firebaseStoreRef.getDownloadURL();
-      await suggestRecipeCollection.doc(userId).update({"picture": url});
-      return url;
-    } catch (e) {
-      log(e.toString());
-      rethrow;
-    }
-  }
-
+  // @override
+  // Future<String> uploadRecipePicture(String path, String userId) async {
+  //   try {
+  //     File imageFile = File(path);
+  //     Reference firebaseStoreRef =
+  //     FirebaseStorage.instance.ref().child('$userId/PP/${userId}_lead');
+  //     await firebaseStoreRef.putFile(imageFile);
+  //     String url = await firebaseStoreRef.getDownloadURL();
+  //     await suggestRecipeCollection.doc(userId).update({"picture": url});
+  //     return url;
+  //   } catch (e) {
+  //     log(e.toString());
+  //     rethrow;
+  //   }
+  // }
 
   @override
   Future<MyUser> getUserData(String userId) async {
@@ -126,16 +125,16 @@ class FirebaseUserRepository implements UserRepository {
     }
   }
 
-  @override
-  Future<void> setSuggestRecipeData(MySuggestRecipe mySuggestRecipe) async {
-    try {
-      await suggestRecipeCollection.doc(mySuggestRecipe.userId).set(
-          mySuggestRecipe.toSuggestRecipeEntity().toSuggestRecipeDocuments());
-    } catch (e) {
-      log(e.toString());
-      rethrow;
-    }
-  }
+  // @override
+  // Future<void> setSuggestRecipeData(MySuggestRecipe mySuggestRecipe) async {
+  //   try {
+  //     await suggestRecipeCollection.doc(mySuggestRecipe.userId).set(
+  //         mySuggestRecipe.toSuggestRecipeEntity().toSuggestRecipeDocuments());
+  //   } catch (e) {
+  //     log(e.toString());
+  //     rethrow;
+  //   }
+  // }
 
   @override
   Future<MyUserRecipe> getUserRecipeData(String userRecipeId) {
@@ -162,6 +161,15 @@ class FirebaseUserRepository implements UserRepository {
     } catch (e) {
       log(e.toString());
       rethrow;
+    }
+  }
+
+  @override
+  Future<void> editUsername(String userId, String newUsername) async {
+    try {
+      return usersCollection.doc(userId).update({"name": newUsername});
+    } catch (e) {
+      log(e.toString());
     }
   }
 }

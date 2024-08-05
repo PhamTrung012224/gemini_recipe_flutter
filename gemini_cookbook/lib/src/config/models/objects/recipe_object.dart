@@ -1,8 +1,10 @@
 import 'package:gemini_cookbook/src/config/models/objects/suggest_response_object.dart';
 
 class RecipeList {
-  final List<Recipe> suggestRecipes;
-  RecipeList({this.suggestRecipes = const []});
+  List<Recipe> suggestRecipes;
+
+  RecipeList({List<Recipe>? suggestRecipes})
+      : suggestRecipes = suggestRecipes ?? [];
 
   void addRecipe(Recipe recipe) {
     suggestRecipes.add(recipe);
@@ -18,8 +20,9 @@ class Recipe {
   String recipeImage;
   final SuggestResponse suggestRecipe;
 
-  Recipe(
-      {required this.recipeId,
-      this.recipeImage = '',
-      required this.suggestRecipe});
+  Recipe({
+    required this.recipeId,
+    this.recipeImage = '',
+    required this.suggestRecipe,
+  });
 }

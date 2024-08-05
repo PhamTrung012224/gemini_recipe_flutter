@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,14 @@ class SavedRecipeScreen extends StatefulWidget {
 
 class _SavedRecipeScreenState extends State<SavedRecipeScreen> {
   final recipeCollection = FirebaseFirestore.instance.collection('recipes');
+  NavigatorState? _navigator;
+
+  @override
+  void didChangeDependencies() {
+    _navigator = Navigator.of(context);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +77,7 @@ class _SavedRecipeScreenState extends State<SavedRecipeScreen> {
                                   .where('ownerId', isEqualTo: widget.userId)
                                   .where('title', isEqualTo: recipeTitles[idx])
                                   .get();
-                              Navigator.of(context).push(
+                              _navigator!.push(
                                 MaterialPageRoute(
                                   builder: (context) => BlocProvider(
                                     create: (context) => SaveRecipeBloc(
@@ -94,21 +103,21 @@ class _SavedRecipeScreenState extends State<SavedRecipeScreen> {
                               child: Row(
                                 children: [
                                   SizedBox(
-                                    width:
-                                        (MediaQuery.of(context).size.width -
-                                                100) /
-                                            2,
+                                    width: (MediaQuery.of(context).size.width -
+                                            100) /
+                                        2,
                                     child: ClipRRect(
                                       borderRadius: const BorderRadius.only(
-                                          topLeft:Radius.circular(4),bottomLeft: Radius.circular(4)),
-                                      child: Image.network(
-                                        youtubeResponses[idx]
+                                          topLeft: Radius.circular(4),
+                                          bottomLeft: Radius.circular(4)),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: youtubeResponses[idx]
                                             .items[0]
                                             .snippet
                                             .thumbnails
                                             .medium
                                             .url,
-                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
@@ -148,5 +157,11 @@ class _SavedRecipeScreenState extends State<SavedRecipeScreen> {
             },
           )),
     );
+  }
+
+  @override
+  void dispose() {
+    _navigator = null;
+    super.dispose();
   }
 }
