@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:choice/choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gemini_cookbook/src/config/components/ui_icon.dart';
@@ -541,7 +542,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                             },
                             child: Container(
                               height: 48,
-                              padding: const EdgeInsets.only(left: 4, right: 4),
+                              padding: const EdgeInsets.only(left: 8, right: 8),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       color: Theme.of(context)
@@ -567,153 +568,155 @@ class _ChooseScreenState extends State<ChooseScreen> {
                       const SizedBox(
                         width: 7.4,
                       ),
-                      BlocBuilder<MyUserBloc, MyUserState>(
-                        builder: (context, userState) {
-                          return BlocBuilder<ChooseScreenBloc,
-                              ChooseScreenState>(
-                            builder: (context, state) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  try {
-                                    String filteredText;
+                      Expanded(
+                        child: BlocBuilder<MyUserBloc, MyUserState>(
+                          builder: (context, userState) {
+                            return BlocBuilder<ChooseScreenBloc,
+                                ChooseScreenState>(
+                              builder: (context, state) {
+                                return GestureDetector(
+                                  onTap: () async {
                                     try {
-                                      filteredText = SafeText.filterText(
-                                        text: textEditingController.value.text,
-                                        extraWords: Constants.extraBadWords,
-                                        useDefaultWords: true,
-                                        fullMode: true,
-                                        obscureSymbol: "",
+                                      String filteredText;
+                                      try {
+                                        filteredText = SafeText.filterText(
+                                          text: textEditingController.value.text,
+                                          extraWords: Constants.extraBadWords,
+                                          useDefaultWords: true,
+                                          fullMode: true,
+                                          obscureSymbol: "",
+                                        );
+                                      } on FormatException {
+                                        // Handle specific exception for text formatting
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.blueGrey,
+                                            content: Text(
+                                              'Format Error: Please avoid using Special Characters !, #, [, +, ...',
+                                              style:
+                                                  TextStyleConstants.semiNormal,
+                                            ),
+                                          ),
+                                        );
+                                        textEditingController.clear();
+                                        return; // Stop further execution in case of this error
+                                      }
+                        
+                                      //Submit prompt to Gemini
+                                      final res = await _submitPrompt(
+                                        _model,
+                                        state.prompt,
+                                        'Additional information is: $filteredText',
+                                        imgData.imageData,
                                       );
-                                    } on FormatException {
-                                      // Handle specific exception for text formatting
-                                      ScaffoldMessenger.of(context)
+                        
+                                      final Map<String, dynamic> jsonMap =
+                                          json.decode(res.text.toString());
+                                      final PromptResponse response =
+                                          PromptResponse.fromJson(jsonMap);
+                                      imgData.resetData();
+                                      textEditingController.clear();
+                                      final res1 = await getYoutubeResponse(
+                                          'How to make ${response.title}', 5);
+                        
+                                      final YoutubeResponse response1 =
+                                          YoutubeResponse.fromJson(res1);
+                        
+                                      _context!
+                                          .read<ChooseScreenBloc>()
+                                          .add(TapResetPromptEvent());
+                                      currentStep = 0;
+                        
+                                      final savedCheck = await recipeCollection
+                                          .where('ownerId',
+                                              isEqualTo: userState.user!.userId)
+                                          .where('title',
+                                              isEqualTo: response.title)
+                                          .get();
+                                      setState(() {
+                                        _isLoadingRecipe = false;
+                                      });
+                                      Navigator.of(_context!).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => BlocProvider(
+                                            create: (context) => SaveRecipeBloc(
+                                                userRepository: context
+                                                    .read<AuthenticationBloc>()
+                                                    .userRepository),
+                                            child: RecipeScreen(
+                                              userId: userState.user!.userId,
+                                              promptResponse: response,
+                                              youtubeResponse: response1,
+                                              savedCheck: savedCheck.size >= 1
+                                                  ? true
+                                                  : false,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    } on HttpException {
+                                      // Handle network-related exceptions
+                                      ScaffoldMessenger.of(_context!)
                                           .showSnackBar(
                                         SnackBar(
                                           backgroundColor: Colors.blueGrey,
                                           content: Text(
-                                            'Format Error: Please avoid using Special Characters !, #, [, +, ...',
-                                            style:
-                                                TextStyleConstants.semiNormal,
+                                            'Network Error: Unable to submit your request.',
+                                            style: TextStyleConstants.semiNormal,
                                           ),
                                         ),
                                       );
-                                      textEditingController.clear();
-                                      return; // Stop further execution in case of this error
-                                    }
-
-                                    //Submit prompt to Gemini
-                                    final res = await _submitPrompt(
-                                      _model,
-                                      state.prompt,
-                                      'Additional information is: $filteredText',
-                                      imgData.imageData,
-                                    );
-
-                                    final Map<String, dynamic> jsonMap =
-                                        json.decode(res.text.toString());
-                                    final PromptResponse response =
-                                        PromptResponse.fromJson(jsonMap);
-                                    imgData.resetData();
-                                    textEditingController.clear();
-                                    final res1 = await getYoutubeResponse(
-                                        'How to make ${response.title}', 5);
-
-                                    final YoutubeResponse response1 =
-                                        YoutubeResponse.fromJson(res1);
-
-                                    _context!
-                                        .read<ChooseScreenBloc>()
-                                        .add(TapResetPromptEvent());
-                                    currentStep = 0;
-
-                                    final savedCheck = await recipeCollection
-                                        .where('ownerId',
-                                            isEqualTo: userState.user!.userId)
-                                        .where('title',
-                                            isEqualTo: response.title)
-                                        .get();
-                                    setState(() {
-                                      _isLoadingRecipe = false;
-                                    });
-                                    Navigator.of(_context!).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => BlocProvider(
-                                          create: (context) => SaveRecipeBloc(
-                                              userRepository: context
-                                                  .read<AuthenticationBloc>()
-                                                  .userRepository),
-                                          child: RecipeScreen(
-                                            userId: userState.user!.userId,
-                                            promptResponse: response,
-                                            youtubeResponse: response1,
-                                            savedCheck: savedCheck.size >= 1
-                                                ? true
-                                                : false,
+                                      setState(() {
+                                        _isLoadingRecipe = false;
+                                      });
+                                    } catch (e) {
+                                      // Handle any other exceptions that weren't caught by the specific catches
+                                      log(e.toString());
+                                      ScaffoldMessenger.of(_context!)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          backgroundColor: Colors.blueGrey,
+                                          content: Text(
+                                            'An unexpected error occurred. Please try again.',
+                                            style: TextStyleConstants.semiNormal,
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  } on HttpException {
-                                    // Handle network-related exceptions
-                                    ScaffoldMessenger.of(_context!)
-                                        .showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: Colors.blueGrey,
-                                        content: Text(
-                                          'Network Error: Unable to submit your request.',
-                                          style: TextStyleConstants.semiNormal,
-                                        ),
-                                      ),
-                                    );
-                                    setState(() {
-                                      _isLoadingRecipe = false;
-                                    });
-                                  } catch (e) {
-                                    // Handle any other exceptions that weren't caught by the specific catches
-                                    log(e.toString());
-                                    ScaffoldMessenger.of(_context!)
-                                        .showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: Colors.blueGrey,
-                                        content: Text(
-                                          'An unexpected error occurred. Please try again.',
-                                          style: TextStyleConstants.semiNormal,
-                                        ),
-                                      ),
-                                    );
-                                    setState(() {
-                                      _isLoadingRecipe = false;
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                  height: 48,
-                                  padding:
-                                      const EdgeInsets.only(left: 4, right: 4),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .background,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(12))),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.send_sharp),
-                                      const SizedBox(width: 4),
-                                      Text('Submit Prompt',
-                                          style: TextStyleConstants.medium),
-                                    ],
+                                      );
+                                      setState(() {
+                                        _isLoadingRecipe = false;
+                                      });
+                                    }
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    padding:
+                                        const EdgeInsets.only(left: 4, right: 4),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(12))),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.send_sharp),
+                                        const SizedBox(width: 4),
+                                        Text('Submit Prompt',
+                                            style: TextStyleConstants.medium),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          );
-                        },
+                                );
+                              },
+                            );
+                          },
+                        ),
                       )
                     ],
                   ),
