@@ -39,7 +39,7 @@ To give yourself administrator permissions on the chat, you will have to type `/
 
 ## Deployment
 
-Add additional notes to deploy this on a live system: [Gemini Recipe]()
+Add additional notes to deploy this on a live system: [Gemini Recipe](gemini_recipe.apk)
 
 
 ## License
