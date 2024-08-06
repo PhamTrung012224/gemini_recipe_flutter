@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         listener: (context, state) {
           if (state is UploadPictureSuccess || state is UploadUsernameSuccess) {
             setState(() {
-              if (Navigator.canPop(context)) {
+              if (Navigator.canPop(context) && state is UploadUsernameSuccess) {
                 Navigator.pop(context);
               }
               context.read<MyUserBloc>().add(GetUserData(
