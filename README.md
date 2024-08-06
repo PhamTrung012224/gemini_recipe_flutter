@@ -22,19 +22,28 @@ for notes on deploying the project on your phone.
 - Seamlessly navigate to instructional videos on YouTube through suggested videos for enhanced guidance.
 
 ## Prerequisite
+- Download an IDE such as Visual Studio, Android Studio, or IntelliJ IDEA. (I personally prefer using Android Studio.)
+- Install Git for project cloning.
+- Install Flutter and Dart.
 
 ## Configure
-Clone this repo to your desktop and run `npm install` to install all the dependencies.
+After cloning this repo to your desktop open it with Android Studio
 
-You might want to look into `config.json` to make change the port you want to use and set up a SSL certificate.
+- First, navigate to the Plugins tab to download Flutter and Dart. After that, open your file.
+- Then, you need to choose Run/Debug Configurations -> Edit Configurations... and configure like this image with KEYs are your API keys.
 
+**This is an image**
+
+**NOTE:** 
+- FIREBASE_KEY can be generated through Firebase instructions.
+- API_KEY and API_KEY1 can be generated in Google Cloud Console.
+- If you build an APK file please change String.fromEnvironment('') to the actual key.
 
 ## Usage
-After you clone this repo to your desktop, go to its root directory and run `npm install` to install its dependencies.
+When you are done configuring your project, press the run or debug icon to start the app.
 
-Once the dependencies are installed, you can run  `npm start` to start the application. You will then be able to access it at localhost:3000
 
-To give yourself administrator permissions on the chat, you will have to type `/role [your-name]` in the app console.
+## Demo Video
 
 
 ## Deployment
@@ -49,12 +58,6 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 See the [LICENSE.md](LICENSE) file for
 details.
 
-
-## Acknowledgments
-
-- Hat tip to anyone whose code is used
-- Inspiration
-- etc
 
 
 
