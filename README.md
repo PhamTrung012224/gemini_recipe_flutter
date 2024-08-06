@@ -4,9 +4,8 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 # Gemini Recipe
-===============
 
-This project will give you an auto-generated recipe app with just a little bit knowledge of database, mainly based on Dart.
+This project will give you an auto-generated recipe app with less time for the database and more on Dart Programming Language.
 
 
 ## Getting Started
@@ -15,19 +14,20 @@ These instructions will give you a copy of the project up and running on
 your local machine for development and testing purposes. See deployment
 for notes on deploying the project on your phone.
 
+
 ## Features
-- Generate almost every recipe through Google AI Gemini.
-- Recipe can be saved to your account.
-- Change theme and profile information.
-- Go directly to video on youtube through suggest videos on screen for better instructions.
+- Utilize Google AI Gemini to access a wide array of recipes effortlessly.
+- Save your favorite recipes to your account for easy reference.
+- Change theme and update profile information as desired.
+- Seamlessly navigate to instructional videos on YouTube through suggested videos for enhanced guidance.
 
+## Prerequisite
 
-## Setup
+## Configure
 Clone this repo to your desktop and run `npm install` to install all the dependencies.
 
 You might want to look into `config.json` to make change the port you want to use and set up a SSL certificate.
 
----
 
 ## Usage
 After you clone this repo to your desktop, go to its root directory and run `npm install` to install its dependencies.
@@ -39,13 +39,16 @@ To give yourself administrator permissions on the chat, you will have to type `/
 
 ## Deployment
 
-Add additional notes to deploy this on a live system
+Add additional notes to deploy this on a live system: [Gemini Recipe]()
+
 
 ## License
 
-This project is licensed under the [CC0 1.0 Universal](LICENSE)
-Creative Commons License - see the [LICENSE.md](LICENSE) file for
-details
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+See the [LICENSE.md](LICENSE) file for
+details.
+
 
 ## Acknowledgments
 
@@ -59,7 +62,7 @@ details
 
 [stars-shield]: https://img.shields.io/github/stars/PhamTrung012224/gemini_recipe_flutter.svg?style=for-the-badge
 [stars-url]: https://github.com/PhamTrung012224/gemini_recipe_flutter/stargazers
-[version-shield]: https://img.shields.io/badge/version-1.0.7-green.svg
+[version-shield]: https://img.shields.io/github/release/PhamTrung012224/gemini_recipe_flutter.svg?style=for-the-badge
 [version-url]: https://github.com/PhamTrung012224/gemini_recipe_flutter
 [license-shield]: https://img.shields.io/github/license/PhamTrung012224/gemini_recipe_flutter.svg?style=for-the-badge
 [license-url]: https://github.com/PhamTrung012224/gemini_recipe_flutter/blob/main/LICENSE
