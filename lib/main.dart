@@ -18,7 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: 'AIzaSyA6f5p6KPVxBVdcVQI--meCUnYgbdpQImM',
+        apiKey: String.fromEnvironment('FIREBASE_KEY'),
         appId: '1:812782569235:android:e1deac914b8092bb78bce6',
         messagingSenderId: '812782569235',
         projectId: 'recipe-with-gemini',

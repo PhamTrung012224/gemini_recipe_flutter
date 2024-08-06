@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:choice/choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gemini_cookbook/src/config/components/ui_icon.dart';
@@ -542,7 +541,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                             },
                             child: Container(
                               height: 48,
-                              padding: const EdgeInsets.only(left: 8, right: 8),
+                              padding: const EdgeInsets.only(left: 4, right: 4),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       color: Theme.of(context)
@@ -556,7 +555,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   const Icon(Icons.info_outline_rounded),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 6),
                                   Text('Full Prompt',
                                       style: TextStyleConstants.medium),
                                 ],
