@@ -12,7 +12,7 @@ This project will give you an auto-generated recipe app with less time for the d
 
 These instructions will give you a copy of the project up and running on
 your local machine for development and testing purposes. See deployment
-for notes on deploying the project on your phone.
+for notes on deploying the project on your device.
 
 ## Screen
 <img src="https://github.com/user-attachments/assets/4b5f0466-9b52-4a17-88b3-cc51bb9a1d7f" width="200" height="400">
